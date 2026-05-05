@@ -15,6 +15,10 @@ function getRootPrefix() {
   return '';
 }
 
+function getPageLanguage() {
+  return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'ro';
+}
+
 function normalizeSiteNavigation() {
   const menu = document.querySelector('#nav-menu');
 
@@ -32,7 +36,7 @@ function normalizeSiteNavigation() {
   if (!hasPortfolio && firstLink) {
     const portfolioLink = document.createElement('a');
     portfolioLink.href = portfolioHref;
-    portfolioLink.textContent = 'Portofoliu';
+    portfolioLink.textContent = getPageLanguage() === 'en' ? 'Portfolio' : 'Portofoliu';
     firstLink.insertAdjacentElement('afterend', portfolioLink);
   }
 
@@ -67,13 +71,65 @@ function normalizePlaceholderContactLinks() {
     link.href = contactHref;
 
     if (link.textContent.trim().toLowerCase().includes('email temporar')) {
-      link.textContent = 'Mergi la contact';
+      link.textContent = getPageLanguage() === 'en' ? 'Go to contact' : 'Mergi la contact';
     }
   });
 }
 
+function getDayOfYearKey() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+}
+
+function getSelectedQuote() {
+  const quotes = window.SITE_QUOTES || [];
+
+  if (!quotes.length) {
+    return null;
+  }
+
+  if (window.SITE_QUOTE_OVERRIDE) {
+    const overrideQuote = quotes.find((quote) => quote.id === window.SITE_QUOTE_OVERRIDE);
+
+    if (overrideQuote) {
+      return overrideQuote;
+    }
+  }
+
+  return quotes[getDayOfYearKey() % quotes.length];
+}
+
+function renderDailyQuote() {
+  const quoteBox = document.querySelector('[data-daily-quote]');
+  const quoteText = document.querySelector('[data-daily-quote-text]');
+  const quoteSource = document.querySelector('[data-daily-quote-source]');
+  const quoteLabel = document.querySelector('[data-daily-quote-label]');
+
+  if (!quoteBox || !quoteText || !quoteSource) {
+    return;
+  }
+
+  const quote = getSelectedQuote();
+
+  if (!quote) {
+    return;
+  }
+
+  const language = getPageLanguage();
+  quoteText.textContent = `„${quote[language] || quote.ro || quote.en}”`;
+  quoteSource.textContent = quote.source ? `— ${quote.author}, ${quote.source}` : `— ${quote.author}`;
+
+  if (quoteLabel) {
+    quoteLabel.textContent = language === 'en' ? 'My quote today:' : 'Citatul meu de azi:';
+  }
+}
+
 normalizeSiteNavigation();
 normalizePlaceholderContactLinks();
+renderDailyQuote();
 
 if (navToggle && navMenu) {
   navToggle.addEventListener('click', () => {
