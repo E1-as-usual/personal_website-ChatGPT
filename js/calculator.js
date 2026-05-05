@@ -100,7 +100,7 @@ function getWeight(formData) {
 }
 
 function getWeightModeLabel(formData) {
-  return knowsExactWeightAndTime(formData) ? 'greutate exactă' : 'estimare în pași de 50 g';
+  return knowsExactWeightAndTime(formData) ? 'greutate exactă' : 'estimare în pași de 25 g';
 }
 
 function getPrintHours(formData, weight) {
@@ -297,7 +297,7 @@ function updateCalculator() {
   if (noteElement) {
     noteElement.textContent = exactMode
       ? 'Estimarea este orientativă. Folosește greutatea și timpul exact introduse. Timpul mașină se taxează doar peste primele 5 ore și se rotunjește în trepte de 0.5 ore.'
-      : 'Estimarea este orientativă. Greutatea se introduce din 50 în 50 g, iar timpul este estimat automat la aproximativ 1 h / 50 g. Dacă știi exact greutatea și timpul din slicer, bifează opțiunea exactă.';
+      : 'Estimarea este orientativă. Greutatea se introduce din 25 în 25 g, iar timpul este estimat automat la aproximativ 1 h / 50 g. Dacă știi exact greutatea și timpul din slicer, bifează opțiunea exactă.';
   }
 
   if (mailtoElement) {
