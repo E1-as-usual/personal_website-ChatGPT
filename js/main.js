@@ -39,6 +39,12 @@ function normalizeSiteNavigation() {
   menu.querySelectorAll('a').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const text = link.textContent.trim().toLowerCase();
+    const isRenderingTopLevelLink = href.includes('areas/rendering.html') || href === 'rendering.html' || text === 'randare' || text === 'rendering';
+
+    if (isRenderingTopLevelLink) {
+      link.remove();
+      return;
+    }
 
     if (href === '#contact' || href.endsWith('/#contact') || text === 'contact') {
       link.href = contactHref;
