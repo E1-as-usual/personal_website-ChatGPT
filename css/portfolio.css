@@ -1,0 +1,126 @@
+.portfolio-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: var(--space-lg);
+  align-items: stretch;
+  min-height: 52vh;
+  padding-top: calc(var(--space-xl) + 2rem);
+}
+
+.portfolio-hero-content,
+.portfolio-note,
+.portfolio-category-card,
+.project-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 18px 44px var(--color-shadow);
+}
+
+.portfolio-hero-content {
+  display: grid;
+  align-content: center;
+  padding: var(--space-xl);
+}
+
+.portfolio-note {
+  display: grid;
+  align-content: end;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  background: var(--color-surface-muted);
+}
+
+.portfolio-note h2,
+.project-card h3,
+.portfolio-category-card h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  line-height: 1.1;
+}
+
+.portfolio-note p,
+.project-card p,
+.portfolio-category-card p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.portfolio-category-grid,
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.portfolio-category-card,
+.project-card {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.portfolio-category-card .image-placeholder,
+.project-card .image-placeholder {
+  min-height: 14rem;
+}
+
+.project-card-gallery {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-xs);
+}
+
+.project-card-gallery .image-placeholder {
+  min-height: 10rem;
+}
+
+.project-card-gallery .image-placeholder:first-child {
+  grid-row: span 2;
+}
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: var(--space-xs);
+}
+
+.project-meta span {
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  background: var(--color-surface-muted);
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.portfolio-back-link {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 1000px) {
+  .portfolio-category-grid,
+  .project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .portfolio-hero,
+  .portfolio-category-grid,
+  .project-grid,
+  .project-card-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-hero {
+    min-height: auto;
+  }
+
+  .project-card-gallery .image-placeholder:first-child {
+    grid-row: auto;
+  }
+}
