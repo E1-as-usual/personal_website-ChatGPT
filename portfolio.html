@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Portofoliu Ioan Chiurciu — proiecte de modelare 3D cu randare opțională, printare 3D, fotografie și construcții la scară mică." />
+    <meta name="description" content="Portofoliu Ioan Chiurciu — toate proiectele într-un singur loc, cu pagini dedicate pentru modelare 3D, printare 3D, fotografie și construcții la scară mică." />
     <title>Portofoliu — Ioan Chiurciu</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/portfolio.css" />
@@ -36,19 +36,27 @@
       <section class="portfolio-hero section-shell">
         <div class="portfolio-hero-content reveal">
           <p class="eyebrow">Portofoliu</p>
-          <h1>Proiecte, teste și lucrări selectate.</h1>
-          <p class="lead">Această zonă va funcționa separat de CV. CV-ul rămâne scurt și profesional; portofoliul poate deveni mai vizual, mai detaliat și mai flexibil.</p>
+          <h1>Toate proiectele într-un singur loc.</h1>
+          <p class="lead">Această pagină pornește cu toate proiectele împreună. Pentru mai mult context, fiecare direcție are și o subpagină dedicată cu proiecte specifice și detalii.</p>
         </div>
         <aside class="portfolio-note reveal">
           <h2>Structură flexibilă</h2>
-          <p>Fiecare categorie va avea propria pagină, cu proiecte prezentate în casete: câteva imagini, o descriere scurtă și detalii relevante.</p>
+          <p>Poți adăuga proiecte noi dintr-un singur fișier de date, apoi ele apar aici și în categoria potrivită.</p>
         </aside>
       </section>
 
       <section class="section-shell">
         <div class="section-heading reveal">
+          <p class="eyebrow">Toate proiectele</p>
+          <h2>Selecție generală.</h2>
+        </div>
+        <div class="project-grid reveal-stagger" data-portfolio-category="all"></div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
           <p class="eyebrow">Categorii</p>
-          <h2>Alege o direcție de portofoliu.</h2>
+          <h2>Mergi la o subpagină cu proiecte specifice.</h2>
         </div>
 
         <div class="portfolio-category-grid reveal-stagger">
@@ -88,5 +96,7 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/portfolio-data.js"></script>
+    <script src="js/portfolio-render.js"></script>
   </body>
 </html>
