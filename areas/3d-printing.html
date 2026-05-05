@@ -167,57 +167,31 @@
             </fieldset>
 
             <fieldset class="calculator-fieldset">
+              <legend>Modelul 3D</legend>
+              <label class="calculator-label">
+                <strong>Care este starea modelului?</strong>
+                <select name="modelStatus">
+                  <option value="complete" selected>Modelul meu este complet / print-ready</option>
+                  <option value="adjustments">Modelul meu poate avea nevoie de ajustări</option>
+                  <option value="repair">Modelul meu are nevoie de reparații</option>
+                  <option value="create">Am nevoie să fie creat modelul</option>
+                </select>
+              </label>
+              <p class="calculator-help" id="calculator-model-note"></p>
+            </fieldset>
+
+            <fieldset class="calculator-fieldset">
               <legend>Estimări de printare</legend>
               <div class="calculator-grid">
                 <label class="calculator-label">
                   <strong>Greutate estimată / bucată</strong>
                   <input type="number" name="weight" min="0" step="1" value="30" inputmode="decimal" />
-                  <span>În grame. Dacă nu știi greutatea, o estimăm după slicer sau după fișier.</span>
+                  <span>În grame. Dacă nu știi greutatea, o confirmăm ulterior cu slicerul.</span>
                 </label>
                 <label class="calculator-label">
                   <strong>Timp estimat / bucată</strong>
                   <input type="number" name="printHours" min="0" step="0.1" value="3" inputmode="decimal" />
-                  <span>În ore. Dacă nu îl știi, completează aproximativ sau lasă valoarea temporară.</span>
-                </label>
-                <label class="calculator-label">
-                  <strong>Cantitate</strong>
-                  <input type="number" name="quantity" min="1" step="1" value="1" inputmode="numeric" />
-                  <span>Reducerea se calculează după greutatea totală, nu după numărul de bucăți.</span>
-                </label>
-                <label class="calculator-label">
-                  <strong>Număr piese pentru finisare</strong>
-                  <input type="number" name="parts" min="1" step="1" value="1" inputmode="numeric" />
-                  <span>Folosit doar pentru opțiunile pe piesă: șlefuire, grunduire, vopsire.</span>
-                </label>
-              </div>
-            </fieldset>
-
-            <fieldset class="calculator-fieldset">
-              <legend>Lucru suplimentar</legend>
-              <div class="calculator-grid">
-                <label class="calculator-label">
-                  <strong>Reparații fișier</strong>
-                  <select name="fileFixing">
-                    <option value="none" selected>Fără reparații</option>
-                    <option value="minor">Minore — de la 10 RON</option>
-                    <option value="moderate">Moderate — de la 20 RON</option>
-                  </select>
-                </label>
-                <label class="calculator-label">
-                  <strong>Modelare 3D</strong>
-                  <select name="modelling">
-                    <option value="none" selected>Fără modelare</option>
-                    <option value="clear">Brief clar — de la 50 RON/oră</option>
-                    <option value="unclear">Brief neclar — de la 75 RON/oră</option>
-                  </select>
-                </label>
-                <label class="calculator-label">
-                  <strong>Ore modelare</strong>
-                  <input type="number" name="modellingHours" min="0" step="0.25" value="0" inputmode="decimal" />
-                </label>
-                <label class="calculator-label">
-                  <strong>Ore manoperă</strong>
-                  <input type="number" name="laborHours" min="0" step="0.25" value="0" inputmode="decimal" />
+                  <span>În ore. Dacă nu îl știi, lasă valoarea temporară și o confirmăm după fișier.</span>
                 </label>
               </div>
             </fieldset>
@@ -242,6 +216,24 @@
                   <span><strong>Asamblare</strong> de la 20 RON / proiect</span>
                 </label>
               </div>
+              <label class="calculator-label" data-conditional="finishing-parts" hidden>
+                <strong>Câte piese au nevoie de finisare?</strong>
+                <input type="number" name="finishingParts" min="1" step="1" value="1" inputmode="numeric" />
+                <span>Apare doar când selectezi o opțiune de post-procesare.</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="calculator-fieldset">
+              <legend>Mai multe bucăți</legend>
+              <label class="calculator-check">
+                <input type="checkbox" name="hasMorePieces" value="yes" />
+                <span><strong>Am mai multe bucăți identice sau similare</strong> — arată câmpul de cantitate</span>
+              </label>
+              <label class="calculator-label" data-conditional="quantity" hidden>
+                <strong>Cantitate</strong>
+                <input type="number" name="quantity" min="1" step="1" value="1" inputmode="numeric" />
+                <span>Reducerea se calculează după greutatea totală estimată, nu doar după numărul de bucăți.</span>
+              </label>
             </fieldset>
           </form>
 
