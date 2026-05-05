@@ -3,8 +3,8 @@ const CALCULATOR = {
   minimumOrder: 25,
   studentDiscount: {
     minWeight: 200,
-    rate: 0.1,
-    label: 'Reducere student: 10%'
+    rate: 0.2,
+    label: 'Reducere student: 20%'
   },
   materialRates: {
     basic: {
