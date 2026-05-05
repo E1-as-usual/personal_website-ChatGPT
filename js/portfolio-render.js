@@ -1,7 +1,34 @@
+function getPortfolioRootPrefix() {
+  const path = window.location.pathname;
+
+  if (path.includes('/portfolio/')) {
+    return '../../';
+  }
+
+  if (path.includes('/ro/') || path.includes('/en/')) {
+    return '../';
+  }
+
+  return '';
+}
+
+function localizePortfolioText(roText, enText) {
+  const isEnglish = document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en');
+  return isEnglish ? enText : roText;
+}
+
+function resolvePortfolioUrl(url) {
+  if (!url || url.startsWith('http') || url.startsWith('/') || url.startsWith('#')) {
+    return url;
+  }
+
+  return `${getPortfolioRootPrefix()}${url}`;
+}
+
 function createImageSlot(image) {
   if (image && image.src) {
     const img = document.createElement('img');
-    img.src = image.src;
+    img.src = resolvePortfolioUrl(image.src);
     img.alt = image.alt || '';
     img.loading = 'lazy';
     return img;
@@ -9,7 +36,7 @@ function createImageSlot(image) {
 
   const placeholder = document.createElement('div');
   placeholder.className = 'image-placeholder';
-  placeholder.textContent = image && image.placeholder ? image.placeholder : 'Imagine temporară';
+  placeholder.textContent = image && image.placeholder ? image.placeholder : localizePortfolioText('Imagine temporară', 'Temporary image');
   return placeholder;
 }
 
@@ -21,9 +48,9 @@ function createProjectCard(project) {
   gallery.className = 'project-card-gallery';
 
   const images = project.images && project.images.length ? project.images : [
-    { placeholder: 'Imagine principală' },
-    { placeholder: 'Detaliu' },
-    { placeholder: 'Detaliu' }
+    { placeholder: localizePortfolioText('Imagine principală', 'Main image') },
+    { placeholder: localizePortfolioText('Detaliu', 'Detail') },
+    { placeholder: localizePortfolioText('Detaliu', 'Detail') }
   ];
 
   images.slice(0, 3).forEach((image) => gallery.appendChild(createImageSlot(image)));
@@ -45,8 +72,8 @@ function createProjectCard(project) {
 
   if (project.detailUrl) {
     const link = document.createElement('a');
-    link.href = project.detailUrl;
-    link.textContent = 'Vezi detalii';
+    link.href = resolvePortfolioUrl(project.detailUrl);
+    link.textContent = localizePortfolioText('Vezi detalii', 'View details');
     card.append(gallery, title, description, meta, link);
     return card;
   }
@@ -73,7 +100,7 @@ function renderPortfolioProjects() {
     if (!projects.length) {
       const empty = document.createElement('article');
       empty.className = 'project-card';
-      empty.innerHTML = '<h3>Proiecte în curând</h3><p>Această zonă este pregătită pentru lucrări viitoare.</p>';
+      empty.innerHTML = `<h3>${localizePortfolioText('Proiecte în curând', 'Projects coming soon')}</h3><p>${localizePortfolioText('Această zonă este pregătită pentru lucrări viitoare.', 'This area is ready for future work.')}</p>`;
       grid.appendChild(empty);
       return;
     }
