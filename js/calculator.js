@@ -1,6 +1,11 @@
 const CALCULATOR = {
   currency: 'RON',
   minimumOrder: 25,
+  studentDiscount: {
+    minWeight: 200,
+    rate: 0.1,
+    label: 'Reducere student: 10%'
+  },
   materialRates: {
     basic: {
       label: 'Basic',
@@ -95,6 +100,10 @@ function knowsExactWeightAndTime(formData) {
   return formData.get('knowsExactWeightAndTime') === 'yes';
 }
 
+function hasStudentDiscount(formData) {
+  return formData.get('studentDiscount') === 'yes';
+}
+
 function getWeight(formData) {
   return knowsExactWeightAndTime(formData) ? getNumber(formData, 'exactWeight') : getNumber(formData, 'estimatedWeight');
 }
@@ -121,6 +130,14 @@ function getTimeModeLabel(formData) {
 
 function getWeightDiscount(totalWeight) {
   return CALCULATOR.weightDiscounts.find((discount) => totalWeight >= discount.minWeight);
+}
+
+function getStudentDiscountAmount(formData, totalWeight, eligibleSubtotal) {
+  if (!hasStudentDiscount(formData) || totalWeight < CALCULATOR.studentDiscount.minWeight) {
+    return 0;
+  }
+
+  return eligibleSubtotal * CALCULATOR.studentDiscount.rate;
 }
 
 function roundUpToIncrement(value, increment) {
@@ -220,6 +237,8 @@ function updateCalculator() {
   const billableMachineHours = getBillableMachineHours(printHours);
   const machineUnit = billableMachineHours * CALCULATOR.machine.hourlyRate;
   const machineTotal = machineUnit * quantity;
+  const studentDiscountEligibleSubtotal = finalMaterialTotal + machineTotal;
+  const studentDiscountTotal = getStudentDiscountAmount(formData, totalWeight, studentDiscountEligibleSubtotal);
   const modelPreparationTotal = modelStatus.price;
 
   const postProcessingTotal = selectedPostProcessing.reduce((total, key) => {
@@ -236,7 +255,7 @@ function updateCalculator() {
     return total + option.pricePerProject;
   }, 0);
 
-  const subtotal = finalMaterialTotal + machineTotal + modelPreparationTotal + postProcessingTotal;
+  const subtotal = finalMaterialTotal + machineTotal - studentDiscountTotal + modelPreparationTotal + postProcessingTotal;
   const total = Math.max(CALCULATOR.minimumOrder, subtotal);
   const perUnit = total / quantity;
   const minimumOrderAdjustment = total - subtotal;
@@ -260,7 +279,12 @@ function updateCalculator() {
   }
 
   if (discountElement) {
-    discountElement.textContent = `${weightDiscount.label} la ${totalWeight} g total`;
+    const studentLabel = hasStudentDiscount(formData)
+      ? totalWeight >= CALCULATOR.studentDiscount.minWeight
+        ? ` + ${CALCULATOR.studentDiscount.label}`
+        : ` + reducere student neaplicată sub ${CALCULATOR.studentDiscount.minWeight} g`
+      : '';
+    discountElement.textContent = `${weightDiscount.label} la ${totalWeight} g total${studentLabel}`;
   }
 
   if (qualityNoteElement) {
@@ -283,6 +307,7 @@ function updateCalculator() {
       buildBreakdownRow('Reducere după greutate', -materialDiscountTotal, weightDiscount.discountPerGram > 0 ? `${totalWeight} g × -${weightDiscount.discountPerGram.toFixed(2)} RON/g` : 'Neaplicat'),
       buildBreakdownRow('Timp estimat', 0, `${printHours} ore / bucată (${timeModeLabel})`),
       buildBreakdownRow('Timp mașină', machineTotal, machineTotal > 0 ? `${billableMachineHours} ore taxabile peste primele ${CALCULATOR.machine.includedHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră × ${quantity} buc.` : `Neaplicat. Primele ${CALCULATOR.machine.includedHours} ore nu se taxează separat.`),
+      buildBreakdownRow('Reducere student', -studentDiscountTotal, hasStudentDiscount(formData) ? (studentDiscountTotal > 0 ? `${CALCULATOR.studentDiscount.rate * 100}% aplicat la material + timp mașină, pentru comenzi de cel puțin ${CALCULATOR.studentDiscount.minWeight} g` : `Neaplicat sub ${CALCULATOR.studentDiscount.minWeight} g total`) : 'Nebifat'),
       buildBreakdownRow(modelStatus.label, modelPreparationTotal, modelPreparationTotal > 0 ? 'Estimare minimă. Se confirmă după verificarea fișierului sau brief-ului.' : 'Neaplicat'),
       buildBreakdownRow('Post-procesare', postProcessingTotal, selectedPostProcessing.length ? `Calculat pentru ${finishingParts} piesă/piese de finisat, folosind capătul inferior al intervalelor` : 'Neaplicat')
     ];
@@ -295,14 +320,17 @@ function updateCalculator() {
   }
 
   if (noteElement) {
+    const studentNote = hasStudentDiscount(formData)
+      ? ` Reducerea pentru studenți este orientativă, poate necesita dovadă de student și se aplică doar de la ${CALCULATOR.studentDiscount.minWeight} g în sus.`
+      : '';
     noteElement.textContent = exactMode
-      ? 'Estimarea este orientativă. Folosește greutatea și timpul exact introduse. Timpul mașină se taxează doar peste primele 5 ore și se rotunjește în trepte de 0.5 ore.'
-      : 'Estimarea este orientativă. Greutatea se introduce din 25 în 25 g, iar timpul este estimat automat la aproximativ 1 h / 50 g. Dacă știi exact greutatea și timpul din slicer, bifează opțiunea exactă.';
+      ? `Estimarea este orientativă. Folosește greutatea și timpul exact introduse. Timpul mașină se taxează doar peste primele 5 ore și se rotunjește în trepte de 0.5 ore.${studentNote}`
+      : `Estimarea este orientativă. Greutatea se introduce din 25 în 25 g, iar timpul este estimat automat la aproximativ 1 h / 50 g. Dacă știi exact greutatea și timpul din slicer, bifează opțiunea exactă.${studentNote}`;
   }
 
   if (mailtoElement) {
     const subject = encodeURIComponent('Estimare printare 3D');
-    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${printHours} ore (${timeModeLabel})\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
+    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${printHours} ore (${timeModeLabel})\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nReducere student: ${hasStudentDiscount(formData) ? (studentDiscountTotal > 0 ? 'aplicată' : 'bifată, dar sub pragul de greutate') : 'nu'}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
     mailtoElement.href = `mailto:hello@example.com?subject=${subject}&body=${body}`;
   }
 }
