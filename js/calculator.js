@@ -28,8 +28,7 @@ const CALCULATOR = {
     hourlyRate: 4,
     includedHours: 5,
     billingIncrementHours: 0.5,
-    estimatedHoursPerGram: 1 / 50,
-    applyOnlyWhenHighTimeRelativeToWeight: true
+    estimatedHoursPerGram: 1 / 50
   },
   modelStatuses: {
     complete: {
@@ -128,17 +127,9 @@ function roundUpToIncrement(value, increment) {
   return Math.ceil(value / increment) * increment;
 }
 
-function getBillableMachineHours(weight, printHours) {
+function getBillableMachineHours(printHours) {
   if (printHours <= CALCULATOR.machine.includedHours) {
     return 0;
-  }
-
-  if (CALCULATOR.machine.applyOnlyWhenHighTimeRelativeToWeight && weight > 0) {
-    const hoursPerGram = printHours / weight;
-
-    if (hoursPerGram < 0.08) {
-      return 0;
-    }
   }
 
   const extraHours = printHours - CALCULATOR.machine.includedHours;
@@ -226,7 +217,7 @@ function updateCalculator() {
   const baseMaterialTotal = totalWeight * material.pricePerGram;
   const materialDiscountTotal = totalWeight * weightDiscount.discountPerGram;
   const finalMaterialTotal = totalWeight * discountedMaterialRate;
-  const billableMachineHours = getBillableMachineHours(weight, printHours);
+  const billableMachineHours = getBillableMachineHours(printHours);
   const machineUnit = billableMachineHours * CALCULATOR.machine.hourlyRate;
   const machineTotal = machineUnit * quantity;
   const modelPreparationTotal = modelStatus.price;
