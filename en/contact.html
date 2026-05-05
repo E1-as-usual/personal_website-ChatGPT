@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Contact Ioan Chiurciu — send a brief for 3D modelling with optional rendering, 3D printing, photography, or small-scale building." />
+    <title>Contact — Ioan Chiurciu</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/contact.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-logo" href="./">Ioan Chiurciu</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="sr-only">Open menu</span>
+        </button>
+        <div class="nav-menu" id="nav-menu">
+          <a href="./">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="../areas/3d-modelling.html">3D Modelling</a>
+          <a href="../areas/3d-printing.html">3D Printing</a>
+          <a href="../areas/photography.html">Photography</a>
+          <a href="../areas/small-scale-building.html">Small-scale Building</a>
+          <a href="../areas/cv.html">CV</a>
+          <a href="contact.html" aria-current="page">Contact</a>
+          <a class="language-pill" href="../ro/contact.html" lang="ro">RO</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="contact-hero section-shell">
+        <div class="contact-hero-content reveal">
+          <p class="eyebrow">Contact</p>
+          <h1>Send a brief, a question, or an idea.</h1>
+          <p class="lead">This page is prepared as the structure for a future form. For now, the data is not sent to a backend; the form will later be connected to email or a dedicated service.</p>
+        </div>
+        <aside class="contact-note reveal">
+          <h2>What helps in a good brief?</h2>
+          <p>Dimensions, files, reference images, material, deadline, approximate budget, quantity, and desired finish level.</p>
+        </aside>
+      </section>
+
+      <section class="section-shell contact-layout">
+        <form class="contact-form reveal" action="#" method="post" enctype="multipart/form-data">
+          <div class="form-grid">
+            <label><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" /></label>
+            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="email@example.com" /></label>
+          </div>
+
+          <label>
+            <span>Project type</span>
+            <select name="projectType">
+              <option value="">Choose a direction</option>
+              <option value="3d-modelling-rendering">3D Modelling + rendering</option>
+              <option value="3d-printing">3D Printing</option>
+              <option value="photography">Photography</option>
+              <option value="small-scale-building">Small-scale building</option>
+              <option value="professional">CV / professional</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+
+          <label><span>Message / brief</span><textarea name="message" rows="8" placeholder="Describe the project, dimensions, material, deadline, quantity, or any relevant detail."></textarea></label>
+          <label><span>Optional file</span><input type="file" name="attachment" /><small>Visual placeholder. Real upload will work after the backend is connected.</small></label>
+
+          <div class="form-actions">
+            <button class="button" type="submit" disabled>Send — coming soon</button>
+            <a class="button button-secondary" href="mailto:hello@example.com?subject=Website%20contact">Temporary email</a>
+          </div>
+
+          <p class="form-disclaimer">The form is currently static. For real contact, use the temporary email until the backend is connected.</p>
+        </form>
+
+        <aside class="contact-sidebar reveal">
+          <article><h2>3D Modelling + rendering</h2><p>Include dimensions, sketches, references, the purpose of the model, whether rendering is needed, and how many final images you want.</p></article>
+          <article><h2>3D Printing</h2><p>Include the STL/3MF/OBJ file if you have one, preferred material, quantity, approximate size, and whether you need finishing.</p></article>
+          <article><h2>Photography</h2><p>Mention the type of work, location, date/period, approximate number of images, and how the images will be used.</p></article>
+          <article><h2>Small-scale building</h2><p>Describe the material, dimensions, use case, finish level, and whether you have visual references.</p></article>
+          <article><h2>CV / professional</h2><p>For professional opportunities, mention the context, role, time period, and what information you need.</p></article>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer"><p>© <span id="current-year"></span> Ioan Chiurciu. Bucharest, Romania.</p></footer>
+    <script src="../js/main.js"></script>
+  </body>
+</html>
