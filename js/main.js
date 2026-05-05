@@ -1,6 +1,74 @@
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('#nav-menu');
 
+function getRootPrefix() {
+  const path = window.location.pathname;
+
+  if (path.includes('/areas/') || path.includes('/portfolio/')) {
+    return '../';
+  }
+
+  if (path.includes('/ro/') || path.includes('/en/')) {
+    return '../';
+  }
+
+  return '';
+}
+
+function normalizeSiteNavigation() {
+  const menu = document.querySelector('#nav-menu');
+
+  if (!menu) {
+    return;
+  }
+
+  const rootPrefix = getRootPrefix();
+  const portfolioHref = `${rootPrefix}portfolio.html`;
+  const contactHref = `${rootPrefix}contact.html`;
+  const links = Array.from(menu.querySelectorAll('a'));
+  const hasPortfolio = links.some((link) => link.getAttribute('href') && link.getAttribute('href').includes('portfolio.html'));
+  const firstLink = links[0];
+
+  if (!hasPortfolio && firstLink) {
+    const portfolioLink = document.createElement('a');
+    portfolioLink.href = portfolioHref;
+    portfolioLink.textContent = 'Portofoliu';
+    firstLink.insertAdjacentElement('afterend', portfolioLink);
+  }
+
+  menu.querySelectorAll('a').forEach((link) => {
+    const href = link.getAttribute('href') || '';
+    const text = link.textContent.trim().toLowerCase();
+
+    if (href === '#contact' || href.endsWith('/#contact') || text === 'contact') {
+      link.href = contactHref;
+      link.textContent = 'Contact';
+    }
+  });
+}
+
+function normalizePlaceholderContactLinks() {
+  const rootPrefix = getRootPrefix();
+  const contactHref = `${rootPrefix}contact.html`;
+
+  document.querySelectorAll('a[href^="mailto:hello@example.com"], a[href="#contact"]').forEach((link) => {
+    const isCalculatorEstimate = link.id === 'calculator-mailto';
+
+    if (isCalculatorEstimate) {
+      return;
+    }
+
+    link.href = contactHref;
+
+    if (link.textContent.trim().toLowerCase().includes('email temporar')) {
+      link.textContent = 'Mergi la contact';
+    }
+  });
+}
+
+normalizeSiteNavigation();
+normalizePlaceholderContactLinks();
+
 if (navToggle && navMenu) {
   navToggle.addEventListener('click', () => {
     const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
