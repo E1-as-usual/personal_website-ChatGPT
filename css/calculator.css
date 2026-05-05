@@ -52,6 +52,12 @@
   font-size: 0.95rem;
 }
 
+.calculator-label[hidden],
+.calculator-check[hidden],
+[hidden] {
+  display: none !important;
+}
+
 .calculator-label strong,
 .calculator-check strong {
   color: var(--color-text);
