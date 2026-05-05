@@ -191,17 +191,13 @@
               <legend>Estimări de printare</legend>
               <div class="calculator-grid">
                 <label class="calculator-check">
-                  <input type="checkbox" name="knowsExactWeight" value="yes" />
-                  <span><strong>Știu greutatea exactă</strong> — folosește pași de 1 g</span>
-                </label>
-                <label class="calculator-check">
-                  <input type="checkbox" name="knowsExactTime" value="yes" />
-                  <span><strong>Știu timpul exact de printare</strong> — arată câmpul de timp</span>
+                  <input type="checkbox" name="knowsExactWeightAndTime" value="yes" />
+                  <span><strong>Știu greutatea și timpul exact din slicer</strong> — folosește pași exacți</span>
                 </label>
                 <label class="calculator-label" data-conditional="estimated-weight">
                   <strong>Greutate aproximativă / bucată</strong>
                   <input type="number" name="estimatedWeight" min="0" step="50" value="50" inputmode="decimal" />
-                  <span>Estimare rapidă în pași de aproximativ 50 g.</span>
+                  <span>Estimare rapidă în pași de aproximativ 50 g. Timpul se estimează automat la aproximativ 1 h / 50 g.</span>
                 </label>
                 <label class="calculator-label" data-conditional="exact-weight" hidden>
                   <strong>Greutate exactă / bucată</strong>
@@ -210,7 +206,7 @@
                 </label>
                 <label class="calculator-label" data-conditional="time" hidden>
                   <strong>Timp exact / bucată</strong>
-                  <input type="number" name="printHours" min="0" step="0.5" value="3" inputmode="decimal" />
+                  <input type="number" name="printHours" min="0" step="0.5" value="1" inputmode="decimal" />
                   <span>În ore, cu pași de 0.5 ore. Primele 5 ore nu se taxează separat.</span>
                 </label>
               </div>
