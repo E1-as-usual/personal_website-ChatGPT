@@ -29,19 +29,27 @@ const CALCULATOR = {
     longPrintThresholdHours: 5,
     applyOnlyWhenHighTimeRelativeToWeight: true
   },
-  labor: {
-    hourlyRate: 20,
-    note: 'Se aplică doar când este necesară manipulare, pregătire, supraveghere sau pregătire specială.'
-  },
-  fileFixing: {
-    none: { label: 'Fără reparații', price: 0 },
-    minor: { label: 'Reparații minore', price: 10 },
-    moderate: { label: 'Reparații moderate', price: 20 }
-  },
-  modelling: {
-    none: { label: 'Fără modelare', hourlyRate: 0 },
-    clear: { label: 'Modelare — brief clar', hourlyRate: 50 },
-    unclear: { label: 'Modelare — brief neclar', hourlyRate: 75 }
+  modelStatuses: {
+    complete: {
+      label: 'Model complet / print-ready',
+      price: 0,
+      note: 'Nu adaugă cost de pregătire în calculator.'
+    },
+    adjustments: {
+      label: 'Modelul poate avea nevoie de ajustări',
+      price: 10,
+      note: 'Estimare fixă minimă pentru ajustări simple: orientare, scară, mici corecții.'
+    },
+    repair: {
+      label: 'Modelul are nevoie de reparații',
+      price: 20,
+      note: 'Estimare fixă minimă pentru reparații moderate de fișier.'
+    },
+    create: {
+      label: 'Am nevoie să fie creat modelul',
+      price: 50,
+      note: 'Estimare minimă de pornire. Modelarea se confirmă separat după brief.'
+    }
   },
   postProcessing: {
     sanding: { label: 'Șlefuire', pricePerPart: 10 },
@@ -63,8 +71,23 @@ function getNumber(formData, key) {
 }
 
 function getQuantity(formData) {
+  const hasMorePieces = formData.get('hasMorePieces') === 'yes';
+
+  if (!hasMorePieces) {
+    return 1;
+  }
+
   const quantity = Math.floor(Number(formData.get('quantity')));
   return Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function getFinishingParts(formData, hasPostProcessing) {
+  if (!hasPostProcessing) {
+    return 1;
+  }
+
+  const parts = Math.floor(Number(formData.get('finishingParts')));
+  return Number.isFinite(parts) && parts > 0 ? parts : 1;
 }
 
 function getWeightDiscount(totalWeight) {
@@ -102,25 +125,45 @@ function buildBreakdownRow(label, value, note = '') {
   `;
 }
 
-function updateCalculator() {
+function toggleConditionalFields() {
   if (!calculatorForm) {
     return;
   }
 
   const formData = new FormData(calculatorForm);
+  const hasMorePieces = formData.get('hasMorePieces') === 'yes';
+  const hasPostProcessing = getCheckedValues(formData, 'postProcessing').length > 0;
+  const quantityField = document.querySelector('[data-conditional="quantity"]');
+  const finishingPartsField = document.querySelector('[data-conditional="finishing-parts"]');
+
+  if (quantityField) {
+    quantityField.hidden = !hasMorePieces;
+  }
+
+  if (finishingPartsField) {
+    finishingPartsField.hidden = !hasPostProcessing;
+  }
+}
+
+function updateCalculator() {
+  if (!calculatorForm) {
+    return;
+  }
+
+  toggleConditionalFields();
+
+  const formData = new FormData(calculatorForm);
   const qualityKey = formData.get('fileQuality') || 'standard';
   const material = CALCULATOR.materialRates[qualityKey] || CALCULATOR.materialRates.standard;
-  const fileFixingKey = formData.get('fileFixing') || 'none';
-  const fileFixing = CALCULATOR.fileFixing[fileFixingKey] || CALCULATOR.fileFixing.none;
-  const modellingKey = formData.get('modelling') || 'none';
-  const modelling = CALCULATOR.modelling[modellingKey] || CALCULATOR.modelling.none;
+  const modelStatusKey = formData.get('modelStatus') || 'complete';
+  const modelStatus = CALCULATOR.modelStatuses[modelStatusKey] || CALCULATOR.modelStatuses.complete;
 
   const weight = getNumber(formData, 'weight');
   const printHours = getNumber(formData, 'printHours');
-  const laborHours = getNumber(formData, 'laborHours');
-  const modellingHours = getNumber(formData, 'modellingHours');
-  const parts = Math.max(1, Math.floor(getNumber(formData, 'parts')) || 1);
+  const selectedPostProcessing = getCheckedValues(formData, 'postProcessing');
+  const hasPostProcessing = selectedPostProcessing.length > 0;
   const quantity = getQuantity(formData);
+  const finishingParts = getFinishingParts(formData, hasPostProcessing);
   const totalWeight = weight * quantity;
   const weightDiscount = getWeightDiscount(totalWeight);
   const discountedMaterialRate = Math.max(0, material.pricePerGram - weightDiscount.discountPerGram);
@@ -129,12 +172,10 @@ function updateCalculator() {
   const materialDiscountTotal = totalWeight * weightDiscount.discountPerGram;
   const finalMaterialTotal = totalWeight * discountedMaterialRate;
   const machineUnit = shouldApplyMachineTime(weight, printHours) ? printHours * CALCULATOR.machine.hourlyRate : 0;
-  const laborUnit = laborHours * CALCULATOR.labor.hourlyRate;
-  const fileFixingUnit = fileFixing.price;
-  const modellingUnit = modellingHours * modelling.hourlyRate;
+  const machineTotal = machineUnit * quantity;
+  const modelPreparationTotal = modelStatus.price;
 
-  const selectedPostProcessing = getCheckedValues(formData, 'postProcessing');
-  const postProcessingUnit = selectedPostProcessing.reduce((total, key) => {
+  const postProcessingTotal = selectedPostProcessing.reduce((total, key) => {
     const option = CALCULATOR.postProcessing[key];
 
     if (!option) {
@@ -142,18 +183,13 @@ function updateCalculator() {
     }
 
     if ('pricePerPart' in option) {
-      return total + option.pricePerPart * parts;
+      return total + option.pricePerPart * finishingParts;
     }
 
     return total + option.pricePerProject;
   }, 0);
 
-  const machineTotal = machineUnit * quantity;
-  const laborTotal = laborUnit * quantity;
-  const fileFixingTotal = fileFixingUnit * quantity;
-  const modellingTotal = modellingUnit * quantity;
-  const postProcessingTotal = postProcessingUnit * quantity;
-  const subtotal = finalMaterialTotal + machineTotal + laborTotal + fileFixingTotal + modellingTotal + postProcessingTotal;
+  const subtotal = finalMaterialTotal + machineTotal + modelPreparationTotal + postProcessingTotal;
   const total = Math.max(CALCULATOR.minimumOrder, subtotal);
   const perUnit = total / quantity;
   const minimumOrderAdjustment = total - subtotal;
@@ -165,6 +201,7 @@ function updateCalculator() {
   const noteElement = document.querySelector('#calculator-note');
   const mailtoElement = document.querySelector('#calculator-mailto');
   const qualityNoteElement = document.querySelector('#calculator-quality-note');
+  const modelNoteElement = document.querySelector('#calculator-model-note');
 
   if (totalElement) {
     totalElement.textContent = formatMoney(total);
@@ -182,15 +219,17 @@ function updateCalculator() {
     qualityNoteElement.textContent = material.note;
   }
 
+  if (modelNoteElement) {
+    modelNoteElement.textContent = modelStatus.note;
+  }
+
   if (breakdownElement) {
     const rows = [
       buildBreakdownRow(`Material — ${material.label}`, baseMaterialTotal, `${totalWeight} g × ${material.pricePerGram} RON/g`),
       buildBreakdownRow('Reducere după greutate', -materialDiscountTotal, weightDiscount.discountPerGram > 0 ? `${totalWeight} g × -${weightDiscount.discountPerGram.toFixed(2)} RON/g` : 'Neaplicat'),
       buildBreakdownRow('Timp mașină', machineTotal, machineTotal > 0 ? `${printHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat sub prag sau când timpul nu este disproporționat față de greutate'),
-      buildBreakdownRow('Manoperă', laborTotal, laborTotal > 0 ? `${laborHours} ore × ${CALCULATOR.labor.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat'),
-      buildBreakdownRow(fileFixing.label, fileFixingTotal, fileFixingTotal > 0 ? 'Folosește capătul inferior al intervalului' : 'Neaplicat'),
-      buildBreakdownRow(modelling.label, modellingTotal, modellingTotal > 0 ? `${modellingHours} ore × ${modelling.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat'),
-      buildBreakdownRow('Post-procesare', postProcessingTotal, selectedPostProcessing.length ? 'Folosește capătul inferior al intervalelor selectate' : 'Neaplicat')
+      buildBreakdownRow(modelStatus.label, modelPreparationTotal, modelPreparationTotal > 0 ? 'Estimare minimă. Se confirmă după verificarea fișierului sau brief-ului.' : 'Neaplicat'),
+      buildBreakdownRow('Post-procesare', postProcessingTotal, selectedPostProcessing.length ? `Calculat pentru ${finishingParts} piesă/piese de finisat, folosind capătul inferior al intervalelor` : 'Neaplicat')
     ];
 
     if (minimumOrderAdjustment > 0) {
@@ -201,12 +240,12 @@ function updateCalculator() {
   }
 
   if (noteElement) {
-    noteElement.textContent = 'Estimarea folosește capătul inferior al intervalelor și nu este ofertă finală. Reducerea se aplică în funcție de greutatea totală estimată, nu de cantitate. Prețul poate varia după verificarea fișierului, material, geometrie, timp și finisaj.';
+    noteElement.textContent = 'Estimarea este orientativă. Clientul nu trebuie să știe exact greutatea sau timpul: acestea pot fi confirmate ulterior prin slicer. Reducerea se aplică în funcție de greutatea totală estimată, iar pregătirea/modelarea se confirmă după verificarea fișierului sau brief-ului.';
   }
 
   if (mailtoElement) {
     const subject = encodeURIComponent('Estimare printare 3D');
-    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g\nTimp estimat per bucată: ${printHours} ore\nNivel fișier: ${material.label}\nReducere greutate: ${weightDiscount.label}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
+    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g\nTimp estimat per bucată: ${printHours} ore\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
     mailtoElement.href = `mailto:hello@example.com?subject=${subject}&body=${body}`;
   }
 }
