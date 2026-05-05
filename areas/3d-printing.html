@@ -122,7 +122,7 @@
             </div>
             <div>
               <strong>Timp mașină</strong>
-              <p>4 RON/oră, aplicat mai ales pentru printuri lungi peste 5 ore, când timpul este mare raportat la greutate.</p>
+              <p>4 RON/oră, aplicat doar pentru timpul de printare care depășește 5 ore. Primele 5 ore nu se taxează separat.</p>
             </div>
             <div>
               <strong>Manoperă</strong>
@@ -164,6 +164,13 @@
                 </select>
               </label>
               <p class="calculator-help" id="calculator-quality-note"></p>
+
+              <label class="calculator-label">
+                <strong>Fișier 3D pentru verificare</strong>
+                <input type="file" name="modelFile" accept=".stl,.3mf,.obj" />
+                <span>Selectarea fișierului ajută la estimare. În această versiune statică, fișierul nu este încă trimis automat.</span>
+              </label>
+              <p class="calculator-help" id="calculator-upload-note"></p>
             </fieldset>
 
             <fieldset class="calculator-fieldset">
@@ -183,15 +190,28 @@
             <fieldset class="calculator-fieldset">
               <legend>Estimări de printare</legend>
               <div class="calculator-grid">
-                <label class="calculator-label">
-                  <strong>Greutate estimată / bucată</strong>
-                  <input type="number" name="weight" min="0" step="1" value="30" inputmode="decimal" />
-                  <span>În grame. Dacă nu știi greutatea, o confirmăm ulterior cu slicerul.</span>
+                <label class="calculator-check">
+                  <input type="checkbox" name="knowsExactWeight" value="yes" />
+                  <span><strong>Știu greutatea exactă</strong> — folosește pași de 1 g</span>
                 </label>
-                <label class="calculator-label">
+                <label class="calculator-check">
+                  <input type="checkbox" name="unknownTime" value="yes" />
+                  <span><strong>Nu știu timpul de printare</strong> — îl confirmăm ulterior cu slicerul</span>
+                </label>
+                <label class="calculator-label" data-conditional="estimated-weight">
+                  <strong>Greutate aproximativă / bucată</strong>
+                  <input type="number" name="estimatedWeight" min="0" step="50" value="50" inputmode="decimal" />
+                  <span>Estimare rapidă în pași de aproximativ 50 g.</span>
+                </label>
+                <label class="calculator-label" data-conditional="exact-weight" hidden>
+                  <strong>Greutate exactă / bucată</strong>
+                  <input type="number" name="exactWeight" min="0" step="1" value="50" inputmode="decimal" />
+                  <span>Folosește acest câmp doar dacă știi greutatea din slicer.</span>
+                </label>
+                <label class="calculator-label" data-conditional="time">
                   <strong>Timp estimat / bucată</strong>
-                  <input type="number" name="printHours" min="0" step="0.1" value="3" inputmode="decimal" />
-                  <span>În ore. Dacă nu îl știi, lasă valoarea temporară și o confirmăm după fișier.</span>
+                  <input type="number" name="printHours" min="0" step="0.5" value="3" inputmode="decimal" />
+                  <span>În ore, cu pași de 0.5 ore. Primele 5 ore nu se taxează separat.</span>
                 </label>
               </div>
             </fieldset>
