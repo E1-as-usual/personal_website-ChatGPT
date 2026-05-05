@@ -18,6 +18,12 @@ const CALCULATOR = {
       note: 'Include optimizare completă, potrivit pentru detalii fine și prioritate la gestionarea comenzii.'
     }
   },
+  weightDiscounts: [
+    { minWeight: 250, discountPerGram: 0.15, label: 'Reducere greutate: -0.15 RON/g' },
+    { minWeight: 150, discountPerGram: 0.1, label: 'Reducere greutate: -0.10 RON/g' },
+    { minWeight: 50, discountPerGram: 0.05, label: 'Reducere greutate: -0.05 RON/g' },
+    { minWeight: 0, discountPerGram: 0, label: 'Fără reducere de greutate' }
+  ],
   machine: {
     hourlyRate: 4,
     longPrintThresholdHours: 5,
@@ -42,12 +48,7 @@ const CALCULATOR = {
     priming: { label: 'Grunduire', pricePerPart: 15 },
     painting: { label: 'Vopsire', pricePerPart: 30 },
     assembly: { label: 'Asamblare', pricePerProject: 20 }
-  },
-  quantityDiscounts: [
-    { minQuantity: 10, multiplier: 0.9, label: 'Reducere cantitate: 10%' },
-    { minQuantity: 5, multiplier: 0.95, label: 'Reducere cantitate: 5%' },
-    { minQuantity: 1, multiplier: 1, label: 'Fără reducere cantitate' }
-  ]
+  }
 };
 
 const calculatorForm = document.querySelector('#printing-calculator');
@@ -66,8 +67,8 @@ function getQuantity(formData) {
   return Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
 }
 
-function getQuantityDiscount(quantity) {
-  return CALCULATOR.quantityDiscounts.find((discount) => quantity >= discount.minQuantity);
+function getWeightDiscount(totalWeight) {
+  return CALCULATOR.weightDiscounts.find((discount) => totalWeight >= discount.minWeight);
 }
 
 function shouldApplyMachineTime(weight, printHours) {
@@ -120,8 +121,13 @@ function updateCalculator() {
   const modellingHours = getNumber(formData, 'modellingHours');
   const parts = Math.max(1, Math.floor(getNumber(formData, 'parts')) || 1);
   const quantity = getQuantity(formData);
+  const totalWeight = weight * quantity;
+  const weightDiscount = getWeightDiscount(totalWeight);
+  const discountedMaterialRate = Math.max(0, material.pricePerGram - weightDiscount.discountPerGram);
 
-  const baseMaterialUnit = weight * material.pricePerGram;
+  const baseMaterialTotal = totalWeight * material.pricePerGram;
+  const materialDiscountTotal = totalWeight * weightDiscount.discountPerGram;
+  const finalMaterialTotal = totalWeight * discountedMaterialRate;
   const machineUnit = shouldApplyMachineTime(weight, printHours) ? printHours * CALCULATOR.machine.hourlyRate : 0;
   const laborUnit = laborHours * CALCULATOR.labor.hourlyRate;
   const fileFixingUnit = fileFixing.price;
@@ -142,12 +148,15 @@ function updateCalculator() {
     return total + option.pricePerProject;
   }, 0);
 
-  const rawUnit = baseMaterialUnit + machineUnit + laborUnit + fileFixingUnit + modellingUnit + postProcessingUnit;
-  const discount = getQuantityDiscount(quantity);
-  const discountedSubtotal = rawUnit * quantity * discount.multiplier;
-  const total = Math.max(CALCULATOR.minimumOrder, discountedSubtotal);
+  const machineTotal = machineUnit * quantity;
+  const laborTotal = laborUnit * quantity;
+  const fileFixingTotal = fileFixingUnit * quantity;
+  const modellingTotal = modellingUnit * quantity;
+  const postProcessingTotal = postProcessingUnit * quantity;
+  const subtotal = finalMaterialTotal + machineTotal + laborTotal + fileFixingTotal + modellingTotal + postProcessingTotal;
+  const total = Math.max(CALCULATOR.minimumOrder, subtotal);
   const perUnit = total / quantity;
-  const minimumOrderAdjustment = total - discountedSubtotal;
+  const minimumOrderAdjustment = total - subtotal;
 
   const totalElement = document.querySelector('#calculator-total');
   const unitElement = document.querySelector('#calculator-unit');
@@ -166,7 +175,7 @@ function updateCalculator() {
   }
 
   if (discountElement) {
-    discountElement.textContent = discount.label;
+    discountElement.textContent = `${weightDiscount.label} la ${totalWeight} g total`;
   }
 
   if (qualityNoteElement) {
@@ -175,12 +184,13 @@ function updateCalculator() {
 
   if (breakdownElement) {
     const rows = [
-      buildBreakdownRow(`Material — ${material.label}`, baseMaterialUnit * quantity * discount.multiplier, `${weight} g × ${material.pricePerGram} RON/g × ${quantity} buc.`),
-      buildBreakdownRow('Timp mașină', machineUnit * quantity * discount.multiplier, machineUnit > 0 ? `${printHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră` : 'Neaplicat sub prag sau când timpul nu este disproporționat față de greutate'),
-      buildBreakdownRow('Manoperă', laborUnit * quantity * discount.multiplier, laborUnit > 0 ? `${laborHours} ore × ${CALCULATOR.labor.hourlyRate} RON/oră` : 'Neaplicat'),
-      buildBreakdownRow(fileFixing.label, fileFixingUnit * quantity * discount.multiplier, fileFixingUnit > 0 ? 'Folosește capătul inferior al intervalului' : 'Neaplicat'),
-      buildBreakdownRow(modelling.label, modellingUnit * quantity * discount.multiplier, modellingUnit > 0 ? `${modellingHours} ore × ${modelling.hourlyRate} RON/oră` : 'Neaplicat'),
-      buildBreakdownRow('Post-procesare', postProcessingUnit * quantity * discount.multiplier, selectedPostProcessing.length ? 'Folosește capătul inferior al intervalelor selectate' : 'Neaplicat')
+      buildBreakdownRow(`Material — ${material.label}`, baseMaterialTotal, `${totalWeight} g × ${material.pricePerGram} RON/g`),
+      buildBreakdownRow('Reducere după greutate', -materialDiscountTotal, weightDiscount.discountPerGram > 0 ? `${totalWeight} g × -${weightDiscount.discountPerGram.toFixed(2)} RON/g` : 'Neaplicat'),
+      buildBreakdownRow('Timp mașină', machineTotal, machineTotal > 0 ? `${printHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat sub prag sau când timpul nu este disproporționat față de greutate'),
+      buildBreakdownRow('Manoperă', laborTotal, laborTotal > 0 ? `${laborHours} ore × ${CALCULATOR.labor.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat'),
+      buildBreakdownRow(fileFixing.label, fileFixingTotal, fileFixingTotal > 0 ? 'Folosește capătul inferior al intervalului' : 'Neaplicat'),
+      buildBreakdownRow(modelling.label, modellingTotal, modellingTotal > 0 ? `${modellingHours} ore × ${modelling.hourlyRate} RON/oră × ${quantity} buc.` : 'Neaplicat'),
+      buildBreakdownRow('Post-procesare', postProcessingTotal, selectedPostProcessing.length ? 'Folosește capătul inferior al intervalelor selectate' : 'Neaplicat')
     ];
 
     if (minimumOrderAdjustment > 0) {
@@ -191,12 +201,12 @@ function updateCalculator() {
   }
 
   if (noteElement) {
-    noteElement.textContent = 'Estimarea folosește capătul inferior al intervalelor și nu este ofertă finală. Prețul poate varia după verificarea fișierului, material, geometrie, timp, cantitate și finisaj.';
+    noteElement.textContent = 'Estimarea folosește capătul inferior al intervalelor și nu este ofertă finală. Reducerea se aplică în funcție de greutatea totală estimată, nu de cantitate. Prețul poate varia după verificarea fișierului, material, geometrie, timp și finisaj.';
   }
 
   if (mailtoElement) {
     const subject = encodeURIComponent('Estimare printare 3D');
-    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată: ${weight} g\nTimp estimat: ${printHours} ore\nNivel fișier: ${material.label}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
+    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g\nTimp estimat per bucată: ${printHours} ore\nNivel fișier: ${material.label}\nReducere greutate: ${weightDiscount.label}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
     mailtoElement.href = `mailto:hello@example.com?subject=${subject}&body=${body}`;
   }
 }
