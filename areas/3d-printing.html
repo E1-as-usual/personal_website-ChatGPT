@@ -7,6 +7,7 @@
     <title>Printare 3D — Ioan Chiurciu</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/area-style.css" />
+    <link rel="stylesheet" href="../css/calculator.css" />
   </head>
   <body>
     <header class="site-header">
@@ -40,12 +41,12 @@
           <p class="lead">Printare flexibilă pentru obiecte funcționale, prototipuri, piese decorative, machete și experimente. Lucrez cu fișiere client, iar când este nevoie pot include verificare, mici ajustări, optimizare, modelare sau finisare.</p>
           <div class="hero-actions">
             <a class="button" href="#pricing">Vezi prețuri orientative</a>
-            <a class="button button-secondary" href="#contact">Cere o estimare</a>
+            <a class="button button-secondary" href="#calculator">Calculează estimativ</a>
           </div>
         </div>
         <div class="area-hero-panel reveal">
           <div class="image-placeholder area-image-placeholder">Imagine temporară</div>
-          <p>Calculatorul interactiv va fi adăugat după ce stabilim structura paginii. Estimările vor fi orientative și vor folosi capătul inferior al intervalelor.</p>
+          <p>Calculatorul interactiv oferă o estimare orientativă. Pentru intervale, folosește capătul inferior, iar reducerea se aplică după greutatea totală estimată.</p>
         </div>
       </section>
 
@@ -144,6 +145,131 @@
         </div>
       </section>
 
+      <section class="section-shell calculator-section" id="calculator">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Calculator</p>
+          <h2>Estimare rapidă pentru printare 3D.</h2>
+        </div>
+
+        <div class="calculator-shell reveal">
+          <form class="calculator-form" id="printing-calculator">
+            <fieldset class="calculator-fieldset">
+              <legend>Fișier și material</legend>
+              <label class="calculator-label">
+                <strong>Integritate și curățenie fișier</strong>
+                <select name="fileQuality">
+                  <option value="basic">Basic — 0.6 RON/g</option>
+                  <option value="standard" selected>Standard — 0.8 RON/g</option>
+                  <option value="premium">Premium — 1.0 RON/g</option>
+                </select>
+              </label>
+              <p class="calculator-help" id="calculator-quality-note"></p>
+            </fieldset>
+
+            <fieldset class="calculator-fieldset">
+              <legend>Estimări de printare</legend>
+              <div class="calculator-grid">
+                <label class="calculator-label">
+                  <strong>Greutate estimată / bucată</strong>
+                  <input type="number" name="weight" min="0" step="1" value="30" inputmode="decimal" />
+                  <span>În grame. Dacă nu știi greutatea, o estimăm după slicer sau după fișier.</span>
+                </label>
+                <label class="calculator-label">
+                  <strong>Timp estimat / bucată</strong>
+                  <input type="number" name="printHours" min="0" step="0.1" value="3" inputmode="decimal" />
+                  <span>În ore. Dacă nu îl știi, completează aproximativ sau lasă valoarea temporară.</span>
+                </label>
+                <label class="calculator-label">
+                  <strong>Cantitate</strong>
+                  <input type="number" name="quantity" min="1" step="1" value="1" inputmode="numeric" />
+                  <span>Reducerea se calculează după greutatea totală, nu după numărul de bucăți.</span>
+                </label>
+                <label class="calculator-label">
+                  <strong>Număr piese pentru finisare</strong>
+                  <input type="number" name="parts" min="1" step="1" value="1" inputmode="numeric" />
+                  <span>Folosit doar pentru opțiunile pe piesă: șlefuire, grunduire, vopsire.</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="calculator-fieldset">
+              <legend>Lucru suplimentar</legend>
+              <div class="calculator-grid">
+                <label class="calculator-label">
+                  <strong>Reparații fișier</strong>
+                  <select name="fileFixing">
+                    <option value="none" selected>Fără reparații</option>
+                    <option value="minor">Minore — de la 10 RON</option>
+                    <option value="moderate">Moderate — de la 20 RON</option>
+                  </select>
+                </label>
+                <label class="calculator-label">
+                  <strong>Modelare 3D</strong>
+                  <select name="modelling">
+                    <option value="none" selected>Fără modelare</option>
+                    <option value="clear">Brief clar — de la 50 RON/oră</option>
+                    <option value="unclear">Brief neclar — de la 75 RON/oră</option>
+                  </select>
+                </label>
+                <label class="calculator-label">
+                  <strong>Ore modelare</strong>
+                  <input type="number" name="modellingHours" min="0" step="0.25" value="0" inputmode="decimal" />
+                </label>
+                <label class="calculator-label">
+                  <strong>Ore manoperă</strong>
+                  <input type="number" name="laborHours" min="0" step="0.25" value="0" inputmode="decimal" />
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="calculator-fieldset">
+              <legend>Post-procesare</legend>
+              <div class="calculator-grid">
+                <label class="calculator-check">
+                  <input type="checkbox" name="postProcessing" value="sanding" />
+                  <span><strong>Șlefuire</strong> de la 10 RON / piesă</span>
+                </label>
+                <label class="calculator-check">
+                  <input type="checkbox" name="postProcessing" value="priming" />
+                  <span><strong>Grunduire</strong> de la 15 RON / piesă</span>
+                </label>
+                <label class="calculator-check">
+                  <input type="checkbox" name="postProcessing" value="painting" />
+                  <span><strong>Vopsire</strong> de la 30 RON / piesă</span>
+                </label>
+                <label class="calculator-check">
+                  <input type="checkbox" name="postProcessing" value="assembly" />
+                  <span><strong>Asamblare</strong> de la 20 RON / proiect</span>
+                </label>
+              </div>
+            </fieldset>
+          </form>
+
+          <aside class="calculator-results" aria-live="polite">
+            <p class="eyebrow">Estimare</p>
+            <p class="calculator-total" id="calculator-total">0.00 RON</p>
+            <p class="calculator-unit">Preț estimativ / bucată: <strong id="calculator-unit">0.00 RON</strong></p>
+            <p class="calculator-discount" id="calculator-discount">Fără reducere de greutate</p>
+
+            <div class="calculator-table-wrap">
+              <table class="calculator-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Element</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Notă</th>
+                  </tr>
+                </thead>
+                <tbody id="calculator-breakdown"></tbody>
+              </table>
+            </div>
+
+            <p class="calculator-note" id="calculator-note"></p>
+            <a class="button" id="calculator-mailto" href="mailto:hello@example.com?subject=Estimare%20printare%203D">Trimite estimarea pe email</a>
+          </aside>
+        </div>
+      </section>
+
       <section class="section-shell">
         <div class="section-heading reveal">
           <p class="eyebrow">Materiale</p>
@@ -196,5 +322,6 @@
     </footer>
 
     <script src="../js/main.js"></script>
+    <script src="../js/calculator.js"></script>
   </body>
 </html>
