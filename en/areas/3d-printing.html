@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="3D printing in Bucharest with Bambu Lab H2D: client files, file checks, optimization, finishing, material availability, and indicative estimates." />
+    <title>3D Printing — Ioan Chiurciu</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/area-style.css" />
+    <link rel="stylesheet" href="../../css/calculator.css" />
+    <link rel="stylesheet" href="../../css/material-availability.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-logo" href="../">Ioan Chiurciu</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="sr-only">Open menu</span>
+        </button>
+        <div class="nav-menu" id="nav-menu">
+          <a href="../">Home</a>
+          <a href="../portfolio.html">Portfolio</a>
+          <a href="3d-modelling.html">3D Modelling</a>
+          <a href="3d-printing.html" aria-current="page">3D Printing</a>
+          <a href="photography.html">Photography</a>
+          <a href="small-scale-building.html">Small-scale Building</a>
+          <a href="cv.html">CV</a>
+          <a href="../contact.html">Contact</a>
+          <a class="language-pill" href="../../areas/3d-printing.html" lang="ro">RO</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="area-hero section-shell">
+        <div class="area-hero-content reveal">
+          <p class="eyebrow">Bambu Lab H2D · Bucharest</p>
+          <h1>3D Printing</h1>
+          <p class="lead">Flexible printing for functional objects, prototypes, decorative parts, models, and experiments. I can work from client files and, when needed, include file checking, small adjustments, optimization, modelling, or finishing.</p>
+          <div class="hero-actions">
+            <a class="button" href="#pricing">View indicative prices</a>
+            <a class="button button-secondary" href="#calculator">Estimate a print</a>
+          </div>
+        </div>
+        <div class="area-hero-panel reveal">
+          <div class="image-placeholder area-image-placeholder">Temporary image</div>
+          <p>The interactive calculator provides an indicative estimate. When a price has a range, it uses the lower end, and weight discounts apply based on total estimated weight.</p>
+        </div>
+      </section>
+
+      <section class="section-shell area-split">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Services</p>
+          <h2>From print-ready file to finished object.</h2>
+        </div>
+        <div class="area-card-grid reveal-stagger">
+          <article class="area-card"><h3>Printing from client files</h3><p>For clean files that are already properly prepared for printing. This is the simplest and most affordable option.</p></article>
+          <article class="area-card"><h3>File checking and adjustments</h3><p>File checking, small corrections, orientation, simple repairs, or more careful preparation when the model requires it.</p></article>
+          <article class="area-card"><h3>Modelling + printing</h3><p>For ideas that do not yet have a 3D model. Pricing depends on how clear the brief is and on the required work time.</p></article>
+          <article class="area-card"><h3>Finishing</h3><p>Sanding, priming, painting, and assembly, quoted separately depending on size, detail, and the desired finish level.</p></article>
+        </div>
+      </section>
+
+      <section class="section-shell" id="pricing">
+        <div class="section-heading reveal"><p class="eyebrow">Pricing</p><h2>Indicative structure, adjusted by file, material, and time.</h2></div>
+        <div class="pricing-layout reveal-stagger">
+          <article class="price-tier"><h3>Basic</h3><p class="price-value">0.6 RON/g</p><ul><li>No file check included</li><li>The client is responsible for file quality and printability</li><li>Single-colour only</li></ul></article>
+          <article class="price-tier price-tier-featured"><h3>Standard</h3><p class="price-value">0.8 RON/g</p><ul><li>Includes file check</li><li>Includes minor adjustments where needed</li><li>Multi-colour printing included</li></ul></article>
+          <article class="price-tier"><h3>Premium</h3><p class="price-value">1.0 RON/g</p><ul><li>Includes full optimization</li><li>Suitable for fine detail</li><li>Priority handling</li></ul></article>
+        </div>
+        <div class="pricing-notes reveal">
+          <h3>Possible extra costs</h3>
+          <div class="notes-grid">
+            <div><strong>Minimum order</strong><p>25 RON</p></div>
+            <div><strong>Machine time</strong><p>4 RON/hour, applied only to the print time above 5 hours. The first 5 hours are not billed separately.</p></div>
+            <div><strong>Labour</strong><p>20 RON/hour, applied only when handling, preparation, supervision, or special operations are needed.</p></div>
+            <div><strong>File repair</strong><p>Minor: from 10 RON. Moderate: from 20 RON.</p></div>
+            <div><strong>Student discount</strong><p>20% for students on orders of at least 200 g, applied to material and machine time. Proof of student status may be required.</p></div>
+            <div><strong>3D modelling</strong><p>Clear brief: from 50 RON/hour. Unclear brief: from 75 RON/hour.</p></div>
+            <div><strong>Post-processing</strong><p>Sanding from 10 RON/part, priming from 15 RON/part, painting from 30 RON/part, assembly from 20 RON/project.</p></div>
+          </div>
+          <p class="fine-print">Prices are indicative, not final quotes. Where ranges exist, the calculator uses the lower end, but costs may vary depending on file quality, geometry, material, time, quantity, and finish.</p>
+        </div>
+      </section>
+
+      <section class="section-shell calculator-section" id="calculator">
+        <div class="section-heading reveal"><p class="eyebrow">Calculator</p><h2>Quick estimate for 3D printing.</h2></div>
+        <div class="calculator-shell reveal">
+          <form class="calculator-form" id="printing-calculator">
+            <fieldset class="calculator-fieldset">
+              <legend>File and material</legend>
+              <label class="calculator-label"><strong>File integrity and cleanliness</strong><select name="fileQuality"><option value="basic">Basic — 0.6 RON/g</option><option value="standard" selected>Standard — 0.8 RON/g</option><option value="premium">Premium — 1.0 RON/g</option></select></label>
+              <p class="calculator-help" id="calculator-quality-note"></p>
+              <label class="calculator-label"><strong>3D file for checking</strong><input type="file" name="modelFile" accept=".stl,.3mf,.obj" /><span>Selecting a file helps with the estimate. In this static version, the file is not sent automatically.</span></label>
+              <p class="calculator-help" id="calculator-upload-note"></p>
+            </fieldset>
+            <fieldset class="calculator-fieldset"><legend>3D model</legend><label class="calculator-label"><strong>What is the state of the model?</strong><select name="modelStatus"><option value="complete" selected>My model is complete / print-ready</option><option value="adjustments">My model may need adjustments</option><option value="repair">My model needs repair</option><option value="create">I need the model to be created</option></select></label><p class="calculator-help" id="calculator-model-note"></p></fieldset>
+            <fieldset class="calculator-fieldset"><legend>Print estimates</legend><div class="calculator-grid"><label class="calculator-check"><input type="checkbox" name="knowsExactWeightAndTime" value="yes" /><span><strong>I know the exact weight and time from the slicer</strong> — use precise steps</span></label><label class="calculator-label" data-conditional="estimated-weight"><strong>Approximate weight / part</strong><input type="number" name="estimatedWeight" min="0" step="25" value="50" inputmode="decimal" /><span>Quick estimate in steps of about 25 g. Time is estimated automatically at about 1 h / 50 g.</span></label><label class="calculator-label" data-conditional="exact-weight" hidden><strong>Exact weight / part</strong><input type="number" name="exactWeight" min="0" step="1" value="50" inputmode="decimal" /><span>Use this only if you know the slicer weight.</span></label><label class="calculator-label" data-conditional="time" hidden><strong>Exact time / part</strong><input type="number" name="printHours" min="0" step="0.5" value="1" inputmode="decimal" /><span>In hours, in 0.5 h steps. The first 5 hours are not billed separately.</span></label></div></fieldset>
+            <fieldset class="calculator-fieldset"><legend>Post-processing</legend><div class="calculator-grid"><label class="calculator-check"><input type="checkbox" name="postProcessing" value="sanding" /><span><strong>Sanding</strong> from 10 RON / part</span></label><label class="calculator-check"><input type="checkbox" name="postProcessing" value="priming" /><span><strong>Priming</strong> from 15 RON / part</span></label><label class="calculator-check"><input type="checkbox" name="postProcessing" value="painting" /><span><strong>Painting</strong> from 30 RON / part</span></label><label class="calculator-check"><input type="checkbox" name="postProcessing" value="assembly" /><span><strong>Assembly</strong> from 20 RON / project</span></label></div><label class="calculator-label" data-conditional="finishing-parts" hidden><strong>How many parts need finishing?</strong><input type="number" name="finishingParts" min="1" step="1" value="1" inputmode="numeric" /><span>This appears only when you select a post-processing option.</span></label></fieldset>
+            <fieldset class="calculator-fieldset"><legend>Multiple pieces</legend><label class="calculator-check"><input type="checkbox" name="hasMorePieces" value="yes" /><span><strong>I have multiple identical or similar pieces</strong> — show quantity field</span></label><label class="calculator-label" data-conditional="quantity" hidden><strong>Quantity</strong><input type="number" name="quantity" min="1" step="1" value="1" inputmode="numeric" /><span>The discount is calculated by total estimated weight, not just by number of pieces.</span></label></fieldset>
+            <fieldset class="calculator-fieldset"><legend>Discounts</legend><label class="calculator-check"><input type="checkbox" name="studentDiscount" value="yes" /><span><strong>I am a student / this is a student order</strong> — apply 20% discount above 200 g</span></label><p class="calculator-help">The student discount applies to material and machine time for orders of at least 200 g. Proof of student status may be required and the discount does not apply to modelling or post-processing.</p></fieldset>
+          </form>
+          <aside class="calculator-results" aria-live="polite"><p class="eyebrow">Estimate</p><p class="calculator-total" id="calculator-total">0.00 RON</p><p class="calculator-unit">Estimated price / part: <strong id="calculator-unit">0.00 RON</strong></p><p class="calculator-discount" id="calculator-discount">No weight discount</p><div class="calculator-table-wrap"><table class="calculator-table"><thead><tr><th scope="col">Item</th><th scope="col">Cost</th><th scope="col">Note</th></tr></thead><tbody id="calculator-breakdown"></tbody></table></div><p class="calculator-note" id="calculator-note"></p><a class="button" id="calculator-mailto" href="mailto:hello@example.com?subject=3D%20printing%20estimate">Send estimate by email</a></aside>
+        </div>
+      </section>
+
+      <section class="section-shell" id="materials">
+        <div class="section-heading reveal"><p class="eyebrow">Materials</p><h2>Filaments, colours, and availability.</h2></div>
+        <div class="area-card-grid reveal-stagger">
+          <article class="area-card"><h3>PLA</h3><p>Easy to use, suitable for decorative parts, models, and visual prototypes.</p></article>
+          <article class="area-card"><h3>PETG</h3><p>More resistant and practical for functional parts or objects used more often.</p></article>
+          <article class="area-card"><h3>TPU</h3><p>Flexible material, useful for elastic pieces, protection parts, or elements that need to bend.</p></article>
+          <article class="area-card"><h3>ABS and special variants</h3><p>Available depending on project requirements and current stock.</p></article>
+        </div>
+        <details class="material-availability-details reveal">
+          <summary>
+            <span class="material-availability-summary-text">
+              <span class="eyebrow">Availability</span>
+              <h3>View available colours and materials</h3>
+              <p>The list can include in-stock materials, limited availability, and unavailable colours marked visually with restock notes.</p>
+            </span>
+          </summary>
+          <div class="material-availability-content">
+            <p class="material-stock-note">Availability is indicative and should be confirmed before ordering. Reference photos can be added later from the assets folder.</p>
+            <div class="material-stock-list" data-material-availability></div>
+          </div>
+        </details>
+      </section>
+
+      <section class="section-shell"><div class="section-heading reveal"><p class="eyebrow">Gallery</p><h2>Space for printed work, tests, and objects.</h2></div><div class="gallery-grid reveal-stagger"><div class="image-placeholder">Temporary image</div><div class="image-placeholder">Temporary image</div><div class="image-placeholder">Temporary image</div></div></section>
+      <section class="section-shell contact-section" id="contact"><div class="contact-card reveal"><p class="eyebrow">Contact</p><h2>Send a file or describe the object you want.</h2><p>For a better estimate, mention the preferred material, quantity, approximate size, deadline, and whether you need finishing.</p><a class="button" href="../contact.html">Go to contact</a></div></section>
+    </main>
+
+    <footer class="site-footer"><p>© <span id="current-year"></span> Ioan Chiurciu. Bucharest, Romania.</p></footer>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/calculator.js"></script>
+    <script src="../../js/material-availability.js"></script>
+  </body>
+</html>
