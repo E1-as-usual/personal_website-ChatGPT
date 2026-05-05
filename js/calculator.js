@@ -108,8 +108,8 @@ function roundUpToIncrement(value, increment) {
   return Math.ceil(value / increment) * increment;
 }
 
-function getBillableMachineHours(weight, printHours, unknownTime) {
-  if (unknownTime || printHours <= CALCULATOR.machine.includedHours) {
+function getBillableMachineHours(weight, printHours, knowsExactTime) {
+  if (!knowsExactTime || printHours <= CALCULATOR.machine.includedHours) {
     return 0;
   }
 
@@ -148,7 +148,7 @@ function toggleConditionalFields() {
   const hasMorePieces = formData.get('hasMorePieces') === 'yes';
   const hasPostProcessing = getCheckedValues(formData, 'postProcessing').length > 0;
   const knowsExactWeight = formData.get('knowsExactWeight') === 'yes';
-  const unknownTime = formData.get('unknownTime') === 'yes';
+  const knowsExactTime = formData.get('knowsExactTime') === 'yes';
   const quantityField = document.querySelector('[data-conditional="quantity"]');
   const finishingPartsField = document.querySelector('[data-conditional="finishing-parts"]');
   const estimatedWeightField = document.querySelector('[data-conditional="estimated-weight"]');
@@ -172,7 +172,7 @@ function toggleConditionalFields() {
   }
 
   if (timeField) {
-    timeField.hidden = unknownTime;
+    timeField.hidden = !knowsExactTime;
   }
 }
 
@@ -188,13 +188,13 @@ function updateCalculator() {
   const material = CALCULATOR.materialRates[qualityKey] || CALCULATOR.materialRates.standard;
   const modelStatusKey = formData.get('modelStatus') || 'complete';
   const modelStatus = CALCULATOR.modelStatuses[modelStatusKey] || CALCULATOR.modelStatuses.complete;
-  const unknownTime = formData.get('unknownTime') === 'yes';
+  const knowsExactTime = formData.get('knowsExactTime') === 'yes';
   const uploadedFile = formData.get('modelFile');
   const uploadedFileName = uploadedFile && uploadedFile.name ? uploadedFile.name : '';
 
   const weight = getWeight(formData);
   const weightModeLabel = getWeightModeLabel(formData);
-  const printHours = unknownTime ? 0 : getNumber(formData, 'printHours');
+  const printHours = knowsExactTime ? getNumber(formData, 'printHours') : 0;
   const selectedPostProcessing = getCheckedValues(formData, 'postProcessing');
   const hasPostProcessing = selectedPostProcessing.length > 0;
   const quantity = getQuantity(formData);
@@ -206,7 +206,7 @@ function updateCalculator() {
   const baseMaterialTotal = totalWeight * material.pricePerGram;
   const materialDiscountTotal = totalWeight * weightDiscount.discountPerGram;
   const finalMaterialTotal = totalWeight * discountedMaterialRate;
-  const billableMachineHours = getBillableMachineHours(weight, printHours, unknownTime);
+  const billableMachineHours = getBillableMachineHours(weight, printHours, knowsExactTime);
   const machineUnit = billableMachineHours * CALCULATOR.machine.hourlyRate;
   const machineTotal = machineUnit * quantity;
   const modelPreparationTotal = modelStatus.price;
@@ -270,7 +270,7 @@ function updateCalculator() {
     const rows = [
       buildBreakdownRow(`Material — ${material.label}`, baseMaterialTotal, `${totalWeight} g × ${material.pricePerGram} RON/g (${weightModeLabel})`),
       buildBreakdownRow('Reducere după greutate', -materialDiscountTotal, weightDiscount.discountPerGram > 0 ? `${totalWeight} g × -${weightDiscount.discountPerGram.toFixed(2)} RON/g` : 'Neaplicat'),
-      buildBreakdownRow('Timp mașină', machineTotal, unknownTime ? 'Neestimat: timpul trebuie confirmat cu slicerul' : machineTotal > 0 ? `${billableMachineHours} ore taxabile peste primele ${CALCULATOR.machine.includedHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră × ${quantity} buc.` : `Neaplicat. Primele ${CALCULATOR.machine.includedHours} ore nu se taxează separat.`),
+      buildBreakdownRow('Timp mașină', machineTotal, !knowsExactTime ? 'Neestimat: timpul se confirmă după slicer sau când bifezi că îl știi exact' : machineTotal > 0 ? `${billableMachineHours} ore taxabile peste primele ${CALCULATOR.machine.includedHours} ore × ${CALCULATOR.machine.hourlyRate} RON/oră × ${quantity} buc.` : `Neaplicat. Primele ${CALCULATOR.machine.includedHours} ore nu se taxează separat.`),
       buildBreakdownRow(modelStatus.label, modelPreparationTotal, modelPreparationTotal > 0 ? 'Estimare minimă. Se confirmă după verificarea fișierului sau brief-ului.' : 'Neaplicat'),
       buildBreakdownRow('Post-procesare', postProcessingTotal, selectedPostProcessing.length ? `Calculat pentru ${finishingParts} piesă/piese de finisat, folosind capătul inferior al intervalelor` : 'Neaplicat')
     ];
@@ -283,12 +283,12 @@ function updateCalculator() {
   }
 
   if (noteElement) {
-    noteElement.textContent = 'Estimarea este orientativă. Greutatea se introduce din 50 în 50 g pentru o estimare rapidă; dacă o știi exact, poți bifa opțiunea de greutate exactă. Timpul mașină se taxează doar peste primele 5 ore și se rotunjește în trepte de 0.5 ore.';
+    noteElement.textContent = 'Estimarea este orientativă. Greutatea se introduce din 50 în 50 g pentru o estimare rapidă; dacă o știi exact, poți bifa opțiunea de greutate exactă. Timpul de printare apare doar când bifezi că îl știi exact; timpul mașină se taxează doar peste primele 5 ore și se rotunjește în trepte de 0.5 ore.';
   }
 
   if (mailtoElement) {
     const subject = encodeURIComponent('Estimare printare 3D');
-    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${unknownTime ? 'nu știu / de verificat' : `${printHours} ore`}\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
+    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${knowsExactTime ? `${printHours} ore` : 'nu știu / de verificat'}\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
     mailtoElement.href = `mailto:hello@example.com?subject=${subject}&body=${body}`;
   }
 }
