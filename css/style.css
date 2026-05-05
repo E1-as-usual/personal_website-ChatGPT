@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Spectral:wght@400;500;600;700&display=swap');
 
 :root {
   --font-heading: 'Fraunces', Georgia, serif;
@@ -26,6 +26,36 @@
   --radius-lg: 1.25rem;
 
   --max-width: 1160px;
+}
+
+.font-current,
+body.font-current {
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', Arial, sans-serif;
+}
+
+.font-classic-editorial,
+body.font-classic-editorial {
+  --font-heading: 'Libre Baskerville', Georgia, serif;
+  --font-body: 'Inter', Arial, sans-serif;
+}
+
+.font-soft-studio,
+body.font-soft-studio {
+  --font-heading: 'Spectral', Georgia, serif;
+  --font-body: 'IBM Plex Sans', Arial, sans-serif;
+}
+
+.font-modern-technical,
+body.font-modern-technical {
+  --font-heading: 'Space Grotesk', Arial, sans-serif;
+  --font-body: 'Archivo', Arial, sans-serif;
+}
+
+.font-literary,
+body.font-literary {
+  --font-heading: 'Crimson Pro', Georgia, serif;
+  --font-body: 'IBM Plex Sans', Arial, sans-serif;
 }
 
 * {
@@ -239,7 +269,7 @@ p {
   color: var(--color-muted);
 }
 
-.hero-quote p {
+.hero-quote p:not(.eyebrow) {
   font-family: var(--font-heading);
   font-size: 1.05rem;
 }
