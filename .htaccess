@@ -1,0 +1,71 @@
+# =========================================================
+# CHIURCIU.COM — Apache configuration
+# Static HTML/CSS/JS site hosted on Namecheap / Apache
+# =========================================================
+
+# Do not allow visitors to browse folders directly.
+Options -Indexes
+
+# ---------------------------------------------------------
+# HTTPS redirect
+# ---------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS when SSL is available.
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ---------------------------------------------------------
+# Custom error page
+# ---------------------------------------------------------
+ErrorDocument 404 /404.html
+
+# ---------------------------------------------------------
+# Basic security headers
+# ---------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+  # Keep this conservative while the site is still being built.
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; base-uri 'self'; form-action 'self' https://formspree.io; frame-ancestors 'self'"
+</IfModule>
+
+# ---------------------------------------------------------
+# Browser caching
+# ---------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML should update quickly.
+  ExpiresByType text/html "access plus 1 hour"
+
+  # CSS and JavaScript can be cached longer.
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+
+  # Images and documents.
+  ExpiresByType image/jpeg "access plus 6 months"
+  ExpiresByType image/png "access plus 6 months"
+  ExpiresByType image/webp "access plus 6 months"
+  ExpiresByType image/svg+xml "access plus 6 months"
+  ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|jpg|jpeg|png|webp|svg|pdf)$">
+    Header set Cache-Control "public"
+  </FilesMatch>
+</IfModule>
+
+# ---------------------------------------------------------
+# Compression, if enabled by the host
+# ---------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript text/javascript image/svg+xml
+</IfModule>
