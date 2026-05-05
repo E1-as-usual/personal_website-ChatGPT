@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Ioan Chiurciu portfolio — all projects in one place, with dedicated pages for 3D modelling, 3D printing, photography, and small-scale building." />
+    <title>Portfolio — Ioan Chiurciu</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/portfolio.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="site-logo" href="./">Ioan Chiurciu</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="sr-only">Open menu</span>
+        </button>
+        <div class="nav-menu" id="nav-menu">
+          <a href="./">Home</a>
+          <a href="portfolio.html" aria-current="page">Portfolio</a>
+          <a href="../areas/3d-modelling.html">3D Modelling</a>
+          <a href="../areas/3d-printing.html">3D Printing</a>
+          <a href="../areas/photography.html">Photography</a>
+          <a href="../areas/small-scale-building.html">Small-scale Building</a>
+          <a href="../areas/cv.html">CV</a>
+          <a href="contact.html">Contact</a>
+          <a class="language-pill" href="../ro/portfolio.html" lang="ro">RO</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="portfolio-hero section-shell">
+        <div class="portfolio-hero-content reveal">
+          <p class="eyebrow">Portfolio</p>
+          <h1>All projects in one place.</h1>
+          <p class="lead">This page starts with all projects together. For more context, each direction also has a dedicated subpage with specific projects and details.</p>
+        </div>
+        <aside class="portfolio-note reveal">
+          <h2>Flexible structure</h2>
+          <p>New projects can be added from one data file, then shown here and in the correct category page.</p>
+        </aside>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">All projects</p>
+          <h2>General selection.</h2>
+        </div>
+        <div class="project-grid reveal-stagger" data-portfolio-category="all"></div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Categories</p>
+          <h2>Go to a dedicated subpage with specific projects.</h2>
+        </div>
+
+        <div class="portfolio-category-grid reveal-stagger">
+          <article class="portfolio-category-card">
+            <div class="image-placeholder">Temporary image</div>
+            <h3>3D Modelling + rendering</h3>
+            <p>Objects, spaces, architectural elements, technical models, form explorations, and rendered presentation images.</p>
+            <a href="../portfolio/3d-modelling.html">View category</a>
+          </article>
+
+          <article class="portfolio-category-card">
+            <div class="image-placeholder">Temporary image</div>
+            <h3>3D Printing</h3>
+            <p>Printed parts, prototypes, material tests, functional objects, and decorative pieces.</p>
+            <a href="../portfolio/3d-printing.html">View category</a>
+          </article>
+
+          <article class="portfolio-category-card">
+            <div class="image-placeholder">Temporary image</div>
+            <h3>Photography</h3>
+            <p>Visual series, observations, personal archives, and curated photographic selections.</p>
+            <a href="../portfolio/photography.html">View category</a>
+          </article>
+
+          <article class="portfolio-category-card">
+            <div class="image-placeholder">Temporary image</div>
+            <h3>Small-scale building</h3>
+            <p>Objects, models, wooden pieces, prototypes, and physical works.</p>
+            <a href="../portfolio/small-scale-building.html">View category</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="current-year"></span> Ioan Chiurciu. Bucharest, Romania.</p>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/portfolio-data.js"></script>
+    <script src="../js/portfolio-render.js"></script>
+  </body>
+</html>
