@@ -3,6 +3,7 @@ window.PORTFOLIO_PROJECTS = [
     category: '3d-modelling',
     title: 'Proiect modelare + randare 1',
     description: 'Descriere scurtă a proiectului: scop, proces, nivel de modelare, randare dacă există, provocări și rezultat.',
+    detailUrl: 'portfolio/projects/example-project.html',
     images: [
       { src: '', alt: 'Randare sau imagine principală', placeholder: 'Randare / imagine principală' },
       { src: '', alt: 'Captură model 3D', placeholder: 'Model 3D' },
