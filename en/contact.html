@@ -37,7 +37,7 @@
         <div class="contact-hero-content reveal">
           <p class="eyebrow">Contact</p>
           <h1>Send a brief, a question, or an idea.</h1>
-          <p class="lead">This page is prepared as the structure for a future form. For now, the data is not sent to a backend; the form will later be connected to email or a dedicated service.</p>
+          <p class="lead">The form sends your message to contact@chiurciu.com. For large files or 3D models, use direct email and attach the files from your own email app.</p>
         </div>
         <aside class="contact-note reveal">
           <h2>What helps in a good brief?</h2>
@@ -46,10 +46,13 @@
       </section>
 
       <section class="section-shell contact-layout">
-        <form class="contact-form reveal" action="#" method="post" enctype="multipart/form-data">
+        <form class="contact-form reveal" action="../send-contact.php" method="post">
+          <input type="hidden" name="lang" value="en" />
+          <label class="sr-only" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+
           <div class="form-grid">
-            <label><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" /></label>
-            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="email@example.com" /></label>
+            <label><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" required /></label>
+            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="email@example.com" required /></label>
           </div>
 
           <label>
@@ -65,15 +68,13 @@
             </select>
           </label>
 
-          <label><span>Message / brief</span><textarea name="message" rows="8" placeholder="Describe the project, dimensions, material, deadline, quantity, or any relevant detail."></textarea></label>
-          <label><span>Optional file</span><input type="file" name="attachment" /><small>Visual placeholder. Real upload will work after the backend is connected.</small></label>
+          <label><span>Message / brief</span><textarea name="message" rows="8" placeholder="Describe the project, dimensions, material, deadline, quantity, or any relevant detail." required></textarea></label>
+          <p class="form-disclaimer">For STL, 3MF, OBJ files or reference images, send them by email after the first contact.</p>
 
           <div class="form-actions">
-            <button class="button" type="submit" disabled>Send — coming soon</button>
-            <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Website%20contact">Temporary email</a>
+            <button class="button" type="submit">Send message</button>
+            <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Website%20contact">Send direct email</a>
           </div>
-
-          <p class="form-disclaimer">The form is currently static. For real contact, use the temporary email until the backend is connected.</p>
         </form>
 
         <aside class="contact-sidebar reveal">
