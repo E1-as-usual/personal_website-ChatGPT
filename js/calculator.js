@@ -331,7 +331,7 @@ function updateCalculator() {
   if (mailtoElement) {
     const subject = encodeURIComponent('Estimare printare 3D');
     const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${printHours} ore (${timeModeLabel})\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nReducere student: ${hasStudentDiscount(formData) ? (studentDiscountTotal > 0 ? 'aplicată' : 'bifată, dar sub pragul de greutate') : 'nu'}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
-    mailtoElement.href = `mailto:hello@example.com?subject=${subject}&body=${body}`;
+    mailtoElement.href = `mailto:contact@chiurciu.com?subject=${subject}&body=${body}`;
   }
 }
 
