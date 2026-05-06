@@ -1,22 +1,24 @@
 const navToggle = document.querySelector('.nav-toggle');
 const navMenu = document.querySelector('#nav-menu');
 
-function getRootPrefix() {
-  const path = window.location.pathname;
-
-  if (path.includes('/areas/') || path.includes('/portfolio/')) {
-    return '../';
-  }
-
-  if (path.includes('/ro/') || path.includes('/en/')) {
-    return '../';
-  }
-
-  return '';
-}
-
 function getPageLanguage() {
   return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'ro';
+}
+
+function getLanguagePagePrefix() {
+  const path = window.location.pathname;
+  const language = getPageLanguage();
+  const languageRoot = `/${language}/`;
+
+  if (path.includes(`/${language}/areas/`) || path.includes(`/${language}/portfolio/`)) {
+    return '../';
+  }
+
+  if (path.includes(languageRoot)) {
+    return '';
+  }
+
+  return `${language}/`;
 }
 
 function normalizeSiteNavigation() {
@@ -26,9 +28,9 @@ function normalizeSiteNavigation() {
     return;
   }
 
-  const rootPrefix = getRootPrefix();
-  const portfolioHref = `${rootPrefix}portfolio.html`;
-  const contactHref = `${rootPrefix}contact.html`;
+  const pagePrefix = getLanguagePagePrefix();
+  const portfolioHref = `${pagePrefix}portfolio.html`;
+  const contactHref = `${pagePrefix}contact.html`;
   const links = Array.from(menu.querySelectorAll('a'));
   const hasPortfolio = links.some((link) => link.getAttribute('href') && link.getAttribute('href').includes('portfolio.html'));
   const firstLink = links[0];
@@ -58,8 +60,8 @@ function normalizeSiteNavigation() {
 }
 
 function normalizePlaceholderContactLinks() {
-  const rootPrefix = getRootPrefix();
-  const contactHref = `${rootPrefix}contact.html`;
+  const pagePrefix = getLanguagePagePrefix();
+  const contactHref = `${pagePrefix}contact.html`;
 
   document.querySelectorAll('a[href^="mailto:hello@example.com"], a[href="#contact"]').forEach((link) => {
     const isCalculatorEstimate = link.id === 'calculator-mailto';
