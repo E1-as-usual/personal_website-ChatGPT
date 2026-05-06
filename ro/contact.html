@@ -15,7 +15,6 @@
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
           <span class="nav-toggle-line"></span>
           <span class="nav-toggle-line"></span>
-          <span class="nav-toggle-line"></span>
           <span class="sr-only">Deschide meniul</span>
         </button>
         <div class="nav-menu" id="nav-menu">
@@ -37,7 +36,7 @@
         <div class="contact-hero-content reveal">
           <p class="eyebrow">Contact</p>
           <h1>Trimite un brief, o întrebare sau o idee.</h1>
-          <p class="lead">Această pagină este pregătită ca structură pentru viitorul formular. Momentan, datele nu sunt trimise către un backend; formularul va fi conectat ulterior la email sau la un serviciu dedicat.</p>
+          <p class="lead">Formularul trimite mesajul către contact@chiurciu.com. Pentru fișiere mari sau modele 3D, folosește emailul și atașează fișierele direct din aplicația ta de email.</p>
         </div>
         <aside class="contact-note reveal">
           <h2>Ce ajută într-un brief bun?</h2>
@@ -46,10 +45,13 @@
       </section>
 
       <section class="section-shell contact-layout">
-        <form class="contact-form reveal" action="#" method="post" enctype="multipart/form-data">
+        <form class="contact-form reveal" action="../send-contact.php" method="post">
+          <input type="hidden" name="lang" value="ro" />
+          <label class="sr-only" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+
           <div class="form-grid">
-            <label><span>Nume</span><input type="text" name="name" autocomplete="name" placeholder="Numele tău" /></label>
-            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="email@example.com" /></label>
+            <label><span>Nume</span><input type="text" name="name" autocomplete="name" placeholder="Numele tău" required /></label>
+            <label><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="email@example.com" required /></label>
           </div>
 
           <label>
@@ -65,15 +67,13 @@
             </select>
           </label>
 
-          <label><span>Mesaj / brief</span><textarea name="message" rows="8" placeholder="Descrie proiectul, dimensiunile, materialul, termenul, cantitatea sau orice detaliu relevant."></textarea></label>
-          <label><span>Fișier opțional</span><input type="file" name="attachment" /><small>Placeholder vizual. Upload-ul real va funcționa după conectarea backend-ului.</small></label>
+          <label><span>Mesaj / brief</span><textarea name="message" rows="8" placeholder="Descrie proiectul, dimensiunile, materialul, termenul, cantitatea sau orice detaliu relevant." required></textarea></label>
+          <p class="form-disclaimer">Pentru fișiere STL, 3MF, OBJ sau imagini de referință, trimite-le prin email după primul contact.</p>
 
           <div class="form-actions">
-            <button class="button" type="submit" disabled>Trimite — în curând</button>
-            <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Contact%20site">Email temporar</a>
+            <button class="button" type="submit">Trimite mesajul</button>
+            <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Contact%20site">Trimite email direct</a>
           </div>
-
-          <p class="form-disclaimer">Formularul este momentan static. Pentru contact real, folosește emailul temporar până conectăm formularul la backend.</p>
         </form>
 
         <aside class="contact-sidebar reveal">
