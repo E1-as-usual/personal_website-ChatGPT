@@ -2,9 +2,11 @@
 /*
   Contact form handler for chiurciu.com.
 
-  Upload this file to a PHP-enabled cPanel hosting environment.
-  The form sends messages to contact@chiurciu.com using the server mail function.
-  If delivery is unreliable, upgrade this file later to PHPMailer + authenticated SMTP.
+  This file must run on PHP-enabled hosting, such as cPanel hosting.
+  It will not work in a static-only preview, GitHub Pages, or a simple local HTML preview.
+
+  The form sends messages to contact@chiurciu.com using PHP mail().
+  If delivery is unreliable, upgrade this later to PHPMailer + authenticated SMTP.
 */
 
 const CONTACT_TO = 'contact@chiurciu.com';
@@ -26,13 +28,13 @@ function clean_text(string $value, int $maxLength = MAX_FIELD_LENGTH): string
 
 function redirect_back(string $lang, string $status): void
 {
-    $base = $lang === 'en' ? 'en/contact.html' : 'ro/contact.html';
+    $base = $lang === 'en' ? '/en/contact.html' : '/ro/contact.html';
     header('Location: ' . $base . '?status=' . rawurlencode($status));
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ro/contact.html');
+    header('Location: /ro/contact.html');
     exit;
 }
 
