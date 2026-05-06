@@ -129,9 +129,89 @@ function renderDailyQuote() {
   }
 }
 
+function renderStructuredFooter() {
+  const footer = document.querySelector('.site-footer');
+
+  if (!footer) {
+    return;
+  }
+
+  const language = getPageLanguage();
+  const prefix = getLanguagePagePrefix();
+  const year = new Date().getFullYear();
+
+  const copy = language === 'en'
+    ? {
+        description: '3D modelling, 3D printing, photography, and small-scale building in Bucharest.',
+        pages: 'Pages',
+        services: 'Services',
+        contact: 'Contact',
+        home: 'Home',
+        portfolio: 'Portfolio',
+        cv: 'CV',
+        modelling: '3D Modelling',
+        printing: '3D Printing',
+        photography: 'Photography',
+        building: 'Small-scale Building',
+        location: 'Bucharest, Romania'
+      }
+    : {
+        description: 'Modelare 3D, printare 3D, fotografie și construcții la scară mică în București.',
+        pages: 'Pagini',
+        services: 'Servicii',
+        contact: 'Contact',
+        home: 'Acasă',
+        portfolio: 'Portofoliu',
+        cv: 'CV',
+        modelling: 'Modelare 3D',
+        printing: 'Printare 3D',
+        photography: 'Fotografie',
+        building: 'Construcții',
+        location: 'București, România'
+      };
+
+  footer.innerHTML = `
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h2>Ioan Chiurciu</h2>
+        <p>${copy.description}</p>
+      </div>
+      <div class="footer-column">
+        <h2>${copy.pages}</h2>
+        <nav class="footer-links" aria-label="${copy.pages}">
+          <a href="${prefix}">${copy.home}</a>
+          <a href="${prefix}portfolio.html">${copy.portfolio}</a>
+          <a href="${prefix}areas/cv.html">${copy.cv}</a>
+          <a href="${prefix}contact.html">${copy.contact}</a>
+        </nav>
+      </div>
+      <div class="footer-column">
+        <h2>${copy.services}</h2>
+        <nav class="footer-links" aria-label="${copy.services}">
+          <a href="${prefix}areas/3d-modelling.html">${copy.modelling}</a>
+          <a href="${prefix}areas/3d-printing.html">${copy.printing}</a>
+          <a href="${prefix}areas/photography.html">${copy.photography}</a>
+          <a href="${prefix}areas/small-scale-building.html">${copy.building}</a>
+        </nav>
+      </div>
+      <div class="footer-column">
+        <h2>${copy.contact}</h2>
+        <nav class="footer-links" aria-label="${copy.contact}">
+          <a href="mailto:contact@chiurciu.com">contact@chiurciu.com</a>
+          <span>${copy.location}</span>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="current-year">${year}</span> Ioan Chiurciu.</p>
+    </div>
+  `;
+}
+
 normalizeSiteNavigation();
 normalizePlaceholderContactLinks();
 renderDailyQuote();
+renderStructuredFooter();
 
 if (navToggle && navMenu) {
   navToggle.addEventListener('click', () => {
