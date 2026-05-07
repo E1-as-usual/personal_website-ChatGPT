@@ -102,10 +102,12 @@ function renderPortfolioProjects() {
       empty.className = 'project-card';
       empty.innerHTML = `<h3>${localizePortfolioText('Proiecte în curând', 'Projects coming soon')}</h3><p>${localizePortfolioText('Această zonă este pregătită pentru lucrări viitoare.', 'This area is ready for future work.')}</p>`;
       grid.appendChild(empty);
+      grid.classList.add('is-visible');
       return;
     }
 
     projects.forEach((project) => grid.appendChild(createProjectCard(project)));
+    grid.classList.add('is-visible');
   });
 }
 
