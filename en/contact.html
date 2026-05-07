@@ -37,7 +37,7 @@
         <div class="contact-hero-content reveal">
           <p class="eyebrow">Contact</p>
           <h1>Send a brief, a question, or an idea.</h1>
-          <p class="lead">The form sends your message to contact@chiurciu.com. For large files or 3D models, use direct email and attach the files from your own email app.</p>
+          <p class="lead">The form sends your message to contact@chiurciu.com. You can attach STL, 3MF, OBJ, images, or PDF files; small files are sent as attachments and larger files as private links.</p>
         </div>
         <aside class="contact-note reveal">
           <h2>What helps in a good brief?</h2>
@@ -46,9 +46,10 @@
       </section>
 
       <section class="section-shell contact-layout">
-        <form class="contact-form reveal" action="/send-contact.php" method="post">
+        <form class="contact-form reveal" action="/send-contact.php" method="post" enctype="multipart/form-data" data-contact-form>
           <input type="hidden" name="lang" value="en" />
           <label class="sr-only" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          <div class="form-status" data-form-status hidden></div>
 
           <div class="form-grid">
             <label><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" required /></label>
@@ -69,10 +70,17 @@
           </label>
 
           <label><span>Message / brief</span><textarea name="message" rows="8" placeholder="Describe the project, dimensions, material, deadline, quantity, or any relevant detail." required></textarea></label>
-          <p class="form-disclaimer">For STL, 3MF, OBJ files or reference images, send them by email after the first contact.</p>
+
+          <label class="file-upload-field">
+            <span>Optional file attachments</span>
+            <input type="file" name="attachments[]" multiple accept=".stl,.3mf,.obj,.jpg,.jpeg,.png,.webp,.pdf" data-file-input />
+            <small>Accepted formats: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF. Up to 15 MB is sent as attachment; up to 50 MB is sent as a private link.</small>
+          </label>
+          <p class="upload-status" data-upload-status>Select files to see the sending method.</p>
+          <p class="form-disclaimer">If your files exceed the form limit, send the message without attachments and include a transfer link in the brief.</p>
 
           <div class="form-actions">
-            <button class="button" type="submit">Send message</button>
+            <button class="button" type="submit" data-submit-button>Send message</button>
             <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Website%20contact">Send direct email</a>
           </div>
         </form>
@@ -89,5 +97,6 @@
 
     <footer class="site-footer"><p>© <span id="current-year"></span> Ioan Chiurciu. Bucharest, Romania.</p></footer>
     <script src="../js/main.js"></script>
+    <script src="../js/contact-upload.js"></script>
   </body>
 </html>
