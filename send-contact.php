@@ -7,25 +7,16 @@
   - Accepts optional files only in strict allowed formats.
   - Small uploads are attached to the email.
   - Larger uploads are stored privately and sent as secure download links.
+  - Stores explicit newsletter opt-ins in private/newsletter-subscribers.jsonl.
   - Uses PHPMailer + authenticated SMTP when configured.
   - Falls back to PHP mail() only when SMTP is not configured and there are no direct attachments.
-
-  Recommended cPanel PHP limits for launch:
-  upload_max_filesize >= 64M
-  post_max_size >= 64M
-  max_execution_time >= 120
-
-  Recommended mailbox setup:
-  - SMTP sender/login: website@chiurciu.com
-  - Messages delivered to: contact@chiurciu.com
-  - Reply-To is automatically set to the client's email from the form.
 */
 
 const CONTACT_TO = 'contact@chiurciu.com';
 const CONTACT_FROM = 'website@chiurciu.com';
 const MAX_FIELD_LENGTH = 4000;
-const ATTACHMENT_LIMIT_BYTES = 15728640; // 15 MB total
-const STORED_LINK_LIMIT_BYTES = 52428800; // 50 MB total
+const ATTACHMENT_LIMIT_BYTES = 15728640;
+const STORED_LINK_LIMIT_BYTES = 52428800;
 const DOWNLOAD_TOKEN_BYTES = 24;
 const DOWNLOAD_EXPIRY_DAYS = 14;
 
@@ -204,6 +195,22 @@ function store_uploads_with_links(array $files): array
     return $links;
 }
 
+function save_newsletter_subscription(string $email, string $name, string $lang): void
+{
+    ensure_private_dirs();
+    $path = private_dir('newsletter-subscribers.jsonl');
+    $entry = [
+        'email' => strtolower($email),
+        'name' => $name,
+        'lang' => $lang,
+        'source' => 'contact-form',
+        'subscribed_at' => date('c'),
+        'ip_hash' => hash('sha256', $_SERVER['REMOTE_ADDR'] ?? ''),
+    ];
+
+    file_put_contents($path, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
+}
+
 function site_base_url(): string
 {
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['SERVER_PORT'] ?? '') === '443');
@@ -311,6 +318,7 @@ $name = clean_text($_POST['name'] ?? '', 120);
 $email = clean_text($_POST['email'] ?? '', 180);
 $projectType = clean_text($_POST['projectType'] ?? '', 120);
 $message = clean_text($_POST['message'] ?? '', 5000);
+$wantsNewsletter = ($_POST['newsletter'] ?? '') === 'yes';
 
 if ($name === '' || $email === '' || $message === '') {
     redirect_back($lang, 'missing');
@@ -336,8 +344,12 @@ try {
     } elseif (!empty($validatedUploads)) {
         $downloadLinks = store_uploads_with_links($validatedUploads);
     }
+
+    if ($wantsNewsletter) {
+        save_newsletter_subscription($email, $name, $lang);
+    }
 } catch (Throwable $exception) {
-    error_log('Upload storage error: ' . $exception->getMessage());
+    error_log('Storage error: ' . $exception->getMessage());
     redirect_back($lang, 'error');
 }
 
@@ -347,6 +359,7 @@ $body = "Ai primit un mesaj nou de pe chiurciu.com\n\n";
 $body .= "Nume: {$name}\n";
 $body .= "Email: {$email}\n";
 $body .= "Tip proiect: " . ($projectType !== '' ? $projectType : 'nespecificat') . "\n";
+$body .= "Newsletter: " . ($wantsNewsletter ? 'da' : 'nu') . "\n";
 $body .= "Limba formularului: {$lang}\n\n";
 $body .= "Mesaj:\n{$message}\n\n";
 
