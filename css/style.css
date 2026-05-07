@@ -15,7 +15,7 @@
   --color-vine-dark: #123f36;
   --color-line: rgba(64, 44, 31, 0.18);
   --color-shadow: rgba(62, 40, 24, 0.12);
-  --color-photo-border: rgba(73, 107, 90, 0.86);
+  --color-photo-border: #35a96f;
 
   --space-xs: 0.5rem;
   --space-sm: 0.85rem;
@@ -320,7 +320,7 @@ p {
 .image-placeholder,
 .project-card-gallery img,
 .material-colour-image img {
-  border: 3px solid var(--color-photo-border);
+  border: 1.5px solid var(--color-photo-border);
 }
 
 .image-placeholder {
