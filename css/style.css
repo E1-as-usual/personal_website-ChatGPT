@@ -16,7 +16,6 @@
   --color-line: rgba(64, 44, 31, 0.18);
   --color-shadow: rgba(62, 40, 24, 0.12);
   --color-photo-border: #5f8f69;
-  --color-edge-crack: rgba(64, 44, 31, 0.22);
 
   --space-xs: 0.5rem;
   --space-sm: 0.85rem;
@@ -262,6 +261,38 @@ p {
   font-size: 0.9rem;
 }
 
+.quote-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.quote-heading-row .eyebrow {
+  margin-bottom: 0;
+}
+
+.quote-link {
+  flex: 0 0 auto;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.quote-link:hover,
+.quote-link:focus-visible {
+  border-color: var(--color-vine-dark);
+  background: rgba(18, 63, 54, 0.06);
+  color: var(--color-vine-dark);
+  outline: none;
+}
+
 .section-heading {
   margin-bottom: var(--space-lg);
 }
@@ -337,78 +368,6 @@ p {
   font-size: 0.9rem;
 }
 
-.expertise-card,
-.teaser-card,
-.contact-card,
-.area-card,
-.area-hero-panel,
-.price-tier,
-.pricing-notes,
-.portfolio-hero-content,
-.portfolio-note,
-.portfolio-category-card,
-.project-card,
-.calculator-form,
-.calculator-results,
-.material-availability-details {
-  position: relative;
-  overflow: hidden;
-}
-
-.expertise-card::before,
-.teaser-card::before,
-.contact-card::before,
-.area-card::before,
-.area-hero-panel::before,
-.price-tier::before,
-.pricing-notes::before,
-.portfolio-hero-content::before,
-.portfolio-note::before,
-.portfolio-category-card::before,
-.project-card::before,
-.calculator-form::before,
-.calculator-results::before,
-.material-availability-details::before {
-  content: '';
-  position: absolute;
-  top: 0.9rem;
-  right: 1.1rem;
-  width: 1.2rem;
-  height: 1.05rem;
-  pointer-events: none;
-  opacity: 0.55;
-  background:
-    linear-gradient(142deg, transparent 0 43%, var(--color-edge-crack) 44% 47%, transparent 48%),
-    linear-gradient(28deg, transparent 0 54%, var(--color-edge-crack) 55% 58%, transparent 59%);
-}
-
-.expertise-card::after,
-.teaser-card::after,
-.contact-card::after,
-.area-card::after,
-.area-hero-panel::after,
-.price-tier::after,
-.pricing-notes::after,
-.portfolio-hero-content::after,
-.portfolio-note::after,
-.portfolio-category-card::after,
-.project-card::after,
-.calculator-form::after,
-.calculator-results::after,
-.material-availability-details::after {
-  content: '';
-  position: absolute;
-  left: 1.05rem;
-  bottom: 0.95rem;
-  width: 1.05rem;
-  height: 0.9rem;
-  pointer-events: none;
-  opacity: 0.38;
-  background:
-    linear-gradient(36deg, transparent 0 48%, var(--color-edge-crack) 49% 52%, transparent 53%),
-    linear-gradient(110deg, transparent 0 58%, var(--color-edge-crack) 59% 62%, transparent 63%);
-}
-
 .teaser-grid {
   grid-template-columns: 1.2fr 0.8fr;
 }
@@ -420,6 +379,38 @@ p {
 
 .contact-section {
   padding-bottom: 0;
+}
+
+.quotes-list {
+  display: grid;
+  gap: var(--space-lg);
+  max-width: 860px;
+}
+
+.quote-entry {
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-line);
+}
+
+.quote-entry blockquote {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2.6vw, 1.9rem);
+  line-height: 1.22;
+}
+
+.quote-entry figcaption {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.quote-entry-description {
+  max-width: 680px;
+  margin: var(--space-xs) 0 0;
+  color: var(--color-muted);
 }
 
 .site-footer {
@@ -544,5 +535,10 @@ p {
 
   .hero {
     min-height: auto;
+  }
+
+  .quote-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
