@@ -25,17 +25,6 @@ function resolvePortfolioUrl(url) {
   return `${getPortfolioRootPrefix()}${url}`;
 }
 
-function getProjectFallbackUrl(project) {
-  const categoryUrls = {
-    '3d-modelling': 'portfolio/3d-modelling.html',
-    '3d-printing': 'portfolio/3d-printing.html',
-    photography: 'portfolio/photography.html',
-    'small-scale-building': 'portfolio/small-scale-building.html'
-  };
-
-  return categoryUrls[project.category] || 'portfolio.html';
-}
-
 function createImageSlot(image) {
   if (image && image.src) {
     const img = document.createElement('img');
@@ -81,13 +70,15 @@ function createProjectCard(project) {
     meta.appendChild(tagElement);
   });
 
-  const link = document.createElement('a');
-  link.href = resolvePortfolioUrl(project.detailUrl || getProjectFallbackUrl(project));
-  link.textContent = project.detailUrl
-    ? localizePortfolioText('Vezi detalii', 'View details')
-    : localizePortfolioText('Vezi categoria', 'View category');
+  card.append(gallery, title, description, meta);
 
-  card.append(gallery, title, description, meta, link);
+  if (project.detailUrl) {
+    const link = document.createElement('a');
+    link.href = resolvePortfolioUrl(project.detailUrl);
+    link.textContent = localizePortfolioText('Vezi detalii', 'View details');
+    card.appendChild(link);
+  }
+
   return card;
 }
 
