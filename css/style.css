@@ -14,9 +14,9 @@
   --color-vine: #496b5a;
   --color-vine-dark: #123f36;
   --color-line: rgba(64, 44, 31, 0.18);
-  --color-vine-line: rgba(73, 107, 90, 0.34);
+  --color-vine-line: rgba(73, 107, 90, 0.38);
   --color-shadow: rgba(62, 40, 24, 0.12);
-  --color-vine-shadow: rgba(18, 63, 54, 0.16);
+  --color-vine-shadow: rgba(18, 63, 54, 0.28);
 
   --space-xs: 0.5rem;
   --space-sm: 0.85rem;
@@ -28,7 +28,7 @@
   --radius-sm: 0.35rem;
   --radius-md: 0.55rem;
   --radius-lg: 0.75rem;
-  --corner-cut: 1.15rem;
+  --corner-cut: 1.05rem;
 
   --max-width: 1160px;
 }
@@ -279,12 +279,21 @@ p {
 .contact-card {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: 0 18px 44px var(--color-shadow);
-  clip-path: polygon(var(--corner-cut) 0, calc(100% - var(--corner-cut)) 0, 100% var(--corner-cut), 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, var(--corner-cut) 100%, 0 calc(100% - var(--corner-cut)), 0 var(--corner-cut));
+  background:
+    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    var(--color-surface);
+  box-shadow:
+    0 18px 44px var(--color-shadow),
+    0 0 0 1px rgba(73, 107, 90, 0.08),
+    -1px -1px 0 var(--color-vine-line),
+    1px 1px 0 rgba(73, 107, 90, 0.22),
+    0 0 14px var(--color-vine-shadow);
 }
 
 .expertise-card::before,
@@ -292,25 +301,23 @@ p {
 .contact-card::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -3px;
   z-index: -1;
   pointer-events: none;
+  border-radius: calc(var(--radius-lg) + 0.2rem);
   background:
-    radial-gradient(circle at 0 0, var(--color-vine-line), transparent 4rem),
-    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.18), transparent 4.6rem),
-    linear-gradient(135deg, rgba(73, 107, 90, 0.22), transparent 18%, transparent 82%, rgba(73, 107, 90, 0.16));
-  opacity: 0.9;
+    radial-gradient(circle at 0 0, rgba(73, 107, 90, 0.72), transparent 2.8rem),
+    radial-gradient(circle at 100% 0, rgba(73, 107, 90, 0.58), transparent 2.8rem),
+    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.58), transparent 2.8rem),
+    radial-gradient(circle at 0 100%, rgba(73, 107, 90, 0.58), transparent 2.8rem);
+  filter: blur(3px);
+  opacity: 0.85;
 }
 
 .expertise-card::after,
 .teaser-card::after,
 .contact-card::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  z-index: -1;
-  background: var(--color-surface);
-  clip-path: inherit;
+  content: none;
 }
 
 .expertise-card {
@@ -321,15 +328,29 @@ p {
 }
 
 .expertise-card-featured {
-  background: var(--color-surface);
-  box-shadow: 0 18px 44px var(--color-shadow), 0 0 0 1px rgba(73, 107, 90, 0.12);
+  background:
+    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    var(--color-surface);
+  box-shadow:
+    0 18px 44px var(--color-shadow),
+    0 0 0 1px rgba(73, 107, 90, 0.22),
+    -1px -1px 0 rgba(73, 107, 90, 0.52),
+    1px 1px 0 rgba(73, 107, 90, 0.38),
+    0 0 18px rgba(18, 63, 54, 0.3);
 }
 
 .expertise-card-featured::before {
+  inset: -4px;
   background:
-    radial-gradient(circle at 0 0, rgba(73, 107, 90, 0.72), transparent 5rem),
-    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.42), transparent 5rem),
-    linear-gradient(135deg, rgba(73, 107, 90, 0.34), transparent 19%, transparent 78%, rgba(73, 107, 90, 0.26));
+    radial-gradient(circle at 0 0, rgba(73, 107, 90, 0.92), transparent 3.25rem),
+    radial-gradient(circle at 100% 0, rgba(73, 107, 90, 0.7), transparent 3.25rem),
+    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.7), transparent 3.25rem),
+    radial-gradient(circle at 0 100%, rgba(73, 107, 90, 0.7), transparent 3.25rem);
+  filter: blur(3px);
+  opacity: 0.95;
 }
 
 .expertise-card p,
