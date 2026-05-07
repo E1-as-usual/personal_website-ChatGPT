@@ -279,21 +279,11 @@ p {
 .contact-card {
   position: relative;
   isolation: isolate;
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
-  background:
-    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    var(--color-surface);
-  box-shadow:
-    0 18px 44px var(--color-shadow),
-    0 0 0 1px rgba(73, 107, 90, 0.08),
-    -1px -1px 0 var(--color-vine-line),
-    1px 1px 0 rgba(73, 107, 90, 0.22),
-    0 0 14px var(--color-vine-shadow);
+  background: var(--color-surface);
+  box-shadow: 0 18px 44px var(--color-shadow);
 }
 
 .expertise-card::before,
@@ -301,23 +291,42 @@ p {
 .contact-card::before {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -2px;
   z-index: -1;
   pointer-events: none;
-  border-radius: calc(var(--radius-lg) + 0.2rem);
-  background:
-    radial-gradient(circle at 0 0, rgba(73, 107, 90, 0.72), transparent 2.8rem),
-    radial-gradient(circle at 100% 0, rgba(73, 107, 90, 0.58), transparent 2.8rem),
-    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.58), transparent 2.8rem),
-    radial-gradient(circle at 0 100%, rgba(73, 107, 90, 0.58), transparent 2.8rem);
-  filter: blur(3px);
-  opacity: 0.85;
+  border-radius: inherit;
+  background: var(--color-vine);
+  opacity: 0.55;
+  filter: blur(4px);
 }
 
 .expertise-card::after,
 .teaser-card::after,
 .contact-card::after {
-  content: none;
+  content: '';
+  position: absolute;
+  width: calc(var(--corner-cut) * 2);
+  height: calc(var(--corner-cut) * 2);
+  pointer-events: none;
+  border-radius: 50%;
+  box-shadow:
+    calc(-1 * var(--corner-cut)) calc(-1 * var(--corner-cut)) 0 var(--color-bg),
+    calc(100vw + var(--corner-cut)) calc(-1 * var(--corner-cut)) 0 var(--color-bg),
+    calc(100vw + var(--corner-cut)) calc(100vh + var(--corner-cut)) 0 var(--color-bg),
+    calc(-1 * var(--corner-cut)) calc(100vh + var(--corner-cut)) 0 var(--color-bg);
+}
+
+.expertise-card .image-placeholder,
+.teaser-card > *,
+.contact-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.expertise-card::after,
+.teaser-card::after,
+.contact-card::after {
+  display: none;
 }
 
 .expertise-card {
@@ -325,32 +334,32 @@ p {
   flex-direction: column;
   min-height: 100%;
   padding: var(--space-md);
-}
-
-.expertise-card-featured {
   background:
     radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
     radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
     radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
     radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
     var(--color-surface);
-  box-shadow:
-    0 18px 44px var(--color-shadow),
-    0 0 0 1px rgba(73, 107, 90, 0.22),
-    -1px -1px 0 rgba(73, 107, 90, 0.52),
-    1px 1px 0 rgba(73, 107, 90, 0.38),
-    0 0 18px rgba(18, 63, 54, 0.3);
+}
+
+.teaser-card,
+.contact-card {
+  background:
+    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
+    var(--color-surface);
 }
 
 .expertise-card-featured::before {
-  inset: -4px;
-  background:
-    radial-gradient(circle at 0 0, rgba(73, 107, 90, 0.92), transparent 3.25rem),
-    radial-gradient(circle at 100% 0, rgba(73, 107, 90, 0.7), transparent 3.25rem),
-    radial-gradient(circle at 100% 100%, rgba(73, 107, 90, 0.7), transparent 3.25rem),
-    radial-gradient(circle at 0 100%, rgba(73, 107, 90, 0.7), transparent 3.25rem);
-  filter: blur(3px);
-  opacity: 0.95;
+  inset: -3px;
+  opacity: 0.78;
+  filter: blur(5px);
+}
+
+.expertise-card-featured {
+  box-shadow: 0 18px 44px var(--color-shadow), 0 0 18px rgba(18, 63, 54, 0.22);
 }
 
 .expertise-card p,
