@@ -8,16 +8,21 @@
   - Small uploads are attached to the email.
   - Larger uploads are stored privately and sent as secure download links.
   - Uses PHPMailer + authenticated SMTP when configured.
-  - Falls back to PHP mail() only when SMTP is not configured.
+  - Falls back to PHP mail() only when SMTP is not configured and there are no direct attachments.
 
   Recommended cPanel PHP limits for launch:
   upload_max_filesize >= 64M
   post_max_size >= 64M
   max_execution_time >= 120
+
+  Recommended mailbox setup:
+  - SMTP sender/login: website@chiurciu.com
+  - Messages delivered to: contact@chiurciu.com
+  - Reply-To is automatically set to the client's email from the form.
 */
 
 const CONTACT_TO = 'contact@chiurciu.com';
-const CONTACT_FROM = 'contact@chiurciu.com';
+const CONTACT_FROM = 'website@chiurciu.com';
 const MAX_FIELD_LENGTH = 4000;
 const ATTACHMENT_LIMIT_BYTES = 15728640; // 15 MB total
 const STORED_LINK_LIMIT_BYTES = 52428800; // 50 MB total
