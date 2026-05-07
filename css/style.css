@@ -220,17 +220,27 @@ p {
   color: #fffaf2;
   font-weight: 700;
   text-decoration: none;
-  transition: transform 180ms ease, background 180ms ease;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
 }
 
-.button:hover {
+.button:hover,
+.button:focus-visible {
   transform: translateY(-2px);
+  border-color: var(--color-accent-dark);
   background: var(--color-accent-dark);
+  box-shadow: 0 0.55rem 1.4rem rgba(92, 50, 29, 0.18);
+  outline: none;
 }
 
 .button-secondary {
   background: transparent;
   color: var(--color-accent-dark);
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: var(--color-accent-dark);
+  color: #fffaf2;
 }
 
 .hero-quote {
@@ -269,6 +279,9 @@ p {
 }
 
 .expertise-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   padding: var(--space-md);
 }
 
@@ -283,10 +296,22 @@ p {
 }
 
 .expertise-card a {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: auto;
+  border-bottom: 2px solid currentColor;
   color: var(--color-accent-dark);
   font-weight: 700;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
+  text-decoration: none;
+  transition: color 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.expertise-card a:hover,
+.expertise-card a:focus-visible {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  outline: none;
 }
 
 .image-placeholder {
