@@ -93,6 +93,12 @@
   min-height: 3rem;
 }
 
+.contact-form input[type='checkbox'] {
+  width: auto;
+  min-height: auto;
+  accent-color: var(--color-vine-dark);
+}
+
 .contact-form input[type='file'] {
   min-height: auto;
   padding: var(--space-sm);
@@ -118,12 +124,32 @@
 }
 
 .form-status,
-.upload-status {
+.upload-status,
+.newsletter-check {
   margin: 0;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   background: rgba(255, 250, 242, 0.72);
+}
+
+.newsletter-check {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.newsletter-check input {
+  margin-top: 0.28rem;
+}
+
+.newsletter-check span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.newsletter-check small {
+  display: block;
+  font-weight: 400;
 }
 
 .form-status[data-status='ok'],
