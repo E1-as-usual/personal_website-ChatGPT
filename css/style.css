@@ -14,9 +14,9 @@
   --color-vine: #496b5a;
   --color-vine-dark: #123f36;
   --color-line: rgba(64, 44, 31, 0.18);
-  --color-vine-line: rgba(73, 107, 90, 0.38);
-  --color-shadow: rgba(62, 40, 24, 0.12);
-  --color-vine-shadow: rgba(18, 63, 54, 0.28);
+  --color-shadow: rgba(62, 40, 24, 0.1);
+  --color-card-shadow: rgba(43, 75, 61, 0.16);
+  --color-card-shadow-strong: rgba(18, 63, 54, 0.22);
 
   --space-xs: 0.5rem;
   --space-sm: 0.85rem;
@@ -25,10 +25,9 @@
   --space-xl: 3rem;
   --space-2xl: 5rem;
 
-  --radius-sm: 0.35rem;
-  --radius-md: 0.55rem;
-  --radius-lg: 0.75rem;
-  --corner-cut: 1.05rem;
+  --radius-sm: 0.45rem;
+  --radius-md: 0.8rem;
+  --radius-lg: 1.25rem;
 
   --max-width: 1160px;
 }
@@ -277,56 +276,10 @@ p {
 .expertise-card,
 .teaser-card,
 .contact-card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
-  box-shadow: 0 18px 44px var(--color-shadow);
-}
-
-.expertise-card::before,
-.teaser-card::before,
-.contact-card::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: inherit;
-  background: var(--color-vine);
-  opacity: 0.55;
-  filter: blur(4px);
-}
-
-.expertise-card::after,
-.teaser-card::after,
-.contact-card::after {
-  content: '';
-  position: absolute;
-  width: calc(var(--corner-cut) * 2);
-  height: calc(var(--corner-cut) * 2);
-  pointer-events: none;
-  border-radius: 50%;
-  box-shadow:
-    calc(-1 * var(--corner-cut)) calc(-1 * var(--corner-cut)) 0 var(--color-bg),
-    calc(100vw + var(--corner-cut)) calc(-1 * var(--corner-cut)) 0 var(--color-bg),
-    calc(100vw + var(--corner-cut)) calc(100vh + var(--corner-cut)) 0 var(--color-bg),
-    calc(-1 * var(--corner-cut)) calc(100vh + var(--corner-cut)) 0 var(--color-bg);
-}
-
-.expertise-card .image-placeholder,
-.teaser-card > *,
-.contact-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.expertise-card::after,
-.teaser-card::after,
-.contact-card::after {
-  display: none;
+  box-shadow: 0 18px 44px var(--color-card-shadow);
 }
 
 .expertise-card {
@@ -334,32 +287,10 @@ p {
   flex-direction: column;
   min-height: 100%;
   padding: var(--space-md);
-  background:
-    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    var(--color-surface);
-}
-
-.teaser-card,
-.contact-card {
-  background:
-    radial-gradient(circle at 0 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 0, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 100% 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    radial-gradient(circle at 0 100%, var(--color-bg) 0 var(--corner-cut), transparent calc(var(--corner-cut) + 1px)),
-    var(--color-surface);
-}
-
-.expertise-card-featured::before {
-  inset: -3px;
-  opacity: 0.78;
-  filter: blur(5px);
 }
 
 .expertise-card-featured {
-  box-shadow: 0 18px 44px var(--color-shadow), 0 0 18px rgba(18, 63, 54, 0.22);
+  box-shadow: 0 18px 44px var(--color-card-shadow-strong), 0 0 0 1px rgba(73, 107, 90, 0.16);
 }
 
 .expertise-card p,
@@ -516,7 +447,7 @@ p {
     border: 1px solid var(--color-line);
     border-radius: var(--radius-lg);
     background: var(--color-surface);
-    box-shadow: 0 18px 44px var(--color-shadow);
+    box-shadow: 0 18px 44px var(--color-card-shadow);
   }
 
   body.nav-open .nav-menu {
