@@ -1,0 +1,15 @@
+# Real server secrets
+private/mail-config.php
+
+# Uploaded contact-form files and generated metadata
+private/uploads/*
+private/metadata/*
+!private/uploads/.gitkeep
+!private/metadata/.gitkeep
+
+# Composer/vendor dependencies may be installed on the server
+vendor/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
