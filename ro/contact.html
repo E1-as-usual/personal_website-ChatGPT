@@ -37,7 +37,7 @@
         <div class="contact-hero-content reveal">
           <p class="eyebrow">Contact</p>
           <h1>Trimite un brief, o întrebare sau o idee.</h1>
-          <p class="lead">Formularul trimite mesajul către contact@chiurciu.com. Pentru fișiere mari sau modele 3D, folosește emailul și atașează fișierele direct din aplicația ta de email.</p>
+          <p class="lead">Formularul trimite mesajul către contact@chiurciu.com. Poți atașa fișiere STL, 3MF, OBJ, imagini sau PDF-uri; fișierele mici se trimit ca atașament, iar cele mai mari ca link privat.</p>
         </div>
         <aside class="contact-note reveal">
           <h2>Ce ajută într-un brief bun?</h2>
@@ -46,9 +46,10 @@
       </section>
 
       <section class="section-shell contact-layout">
-        <form class="contact-form reveal" action="/send-contact.php" method="post">
+        <form class="contact-form reveal" action="/send-contact.php" method="post" enctype="multipart/form-data" data-contact-form>
           <input type="hidden" name="lang" value="ro" />
           <label class="sr-only" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          <div class="form-status" data-form-status hidden></div>
 
           <div class="form-grid">
             <label><span>Nume</span><input type="text" name="name" autocomplete="name" placeholder="Numele tău" required /></label>
@@ -69,10 +70,17 @@
           </label>
 
           <label><span>Mesaj / brief</span><textarea name="message" rows="8" placeholder="Descrie proiectul, dimensiunile, materialul, termenul, cantitatea sau orice detaliu relevant." required></textarea></label>
-          <p class="form-disclaimer">Pentru fișiere STL, 3MF, OBJ sau imagini de referință, trimite-le prin email după primul contact.</p>
+
+          <label class="file-upload-field">
+            <span>Fișiere atașate opțional</span>
+            <input type="file" name="attachments[]" multiple accept=".stl,.3mf,.obj,.jpg,.jpeg,.png,.webp,.pdf" data-file-input />
+            <small>Formate acceptate: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF. Până la 15 MB se trimit ca atașament; până la 50 MB se trimit ca link privat.</small>
+          </label>
+          <p class="upload-status" data-upload-status>Selectează fișiere pentru a vedea metoda de trimitere.</p>
+          <p class="form-disclaimer">Dacă fișierele depășesc limita formularului, trimite mesajul fără atașament și include un link de transfer în brief.</p>
 
           <div class="form-actions">
-            <button class="button" type="submit">Trimite mesajul</button>
+            <button class="button" type="submit" data-submit-button>Trimite mesajul</button>
             <a class="button button-secondary" href="mailto:contact@chiurciu.com?subject=Contact%20site">Trimite email direct</a>
           </div>
         </form>
@@ -89,5 +97,6 @@
 
     <footer class="site-footer"><p>© <span id="current-year"></span> Ioan Chiurciu. București, România.</p></footer>
     <script src="../js/main.js"></script>
+    <script src="../js/contact-upload.js"></script>
   </body>
 </html>
