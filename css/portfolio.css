@@ -14,9 +14,7 @@
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
-  box-shadow:
-    0 10px 18px var(--color-card-shadow),
-    0 2px 6px var(--color-card-shadow-soft);
+  box-shadow: 0 18px 44px var(--color-shadow);
 }
 
 .portfolio-hero-content {
