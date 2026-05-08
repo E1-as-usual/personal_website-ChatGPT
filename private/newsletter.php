@@ -136,5 +136,13 @@ function newsletter_unsubscribe(string $token): bool
 
 function newsletter_active_subscribers(): array
 {
-    return array_values(array_filter(newsletter_load_subscribers(), fn ($subscriber) => ($subscriber['status'] ?? 'subscribed') === 'subscribed'));
+    $active = [];
+
+    foreach (newsletter_load_subscribers() as $subscriber) {
+        if (($subscriber['status'] ?? 'subscribed') === 'subscribed') {
+            $active[] = $subscriber;
+        }
+    }
+
+    return $active;
 }
