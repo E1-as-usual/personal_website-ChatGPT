@@ -78,12 +78,36 @@ function normalizePlaceholderContactLinks() {
   });
 }
 
-function getDayOfYearKey() {
+function getTodayDateKey() {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start;
-  const oneDay = 1000 * 60 * 60 * 24;
-  return Math.floor(diff / oneDay);
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getRandomQuote(quotes, previousQuoteId) {
+  const availableQuotes = quotes.length > 1
+    ? quotes.filter((quote) => quote.id !== previousQuoteId)
+    : quotes;
+
+  return availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
+}
+
+function readStoredDailyQuote() {
+  try {
+    return JSON.parse(localStorage.getItem('siteDailyQuote') || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveStoredDailyQuote(selection) {
+  try {
+    localStorage.setItem('siteDailyQuote', JSON.stringify(selection));
+  } catch (error) {
+    return;
+  }
 }
 
 function getSelectedQuote() {
@@ -101,7 +125,26 @@ function getSelectedQuote() {
     }
   }
 
-  return quotes[getDayOfYearKey() % quotes.length];
+  const today = getTodayDateKey();
+  const storedSelection = readStoredDailyQuote();
+  const storedQuote = quotes.find((quote) => quote.id === storedSelection.quoteId);
+
+  if (storedSelection.date === today && storedQuote) {
+    return storedQuote;
+  }
+
+  const newQuote = getRandomQuote(quotes, storedSelection.quoteId);
+
+  if (!newQuote) {
+    return null;
+  }
+
+  saveStoredDailyQuote({
+    date: today,
+    quoteId: newQuote.id
+  });
+
+  return newQuote;
 }
 
 function renderDailyQuote() {
