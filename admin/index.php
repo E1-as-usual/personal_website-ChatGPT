@@ -46,8 +46,13 @@ function read_upload_metadata(): array
         }
     }
 
-    usort($rows, fn ($a, $b) => ($b['uploaded_at'] ?? 0) <=> ($a['uploaded_at'] ?? 0));
+    usort($rows, 'sort_upload_metadata_desc');
     return $rows;
+}
+
+function sort_upload_metadata_desc(array $a, array $b): int
+{
+    return ($b['uploaded_at'] ?? 0) <=> ($a['uploaded_at'] ?? 0);
 }
 
 function cleanup_expired_uploads(): int
@@ -97,6 +102,17 @@ function export_subscribers_csv(array $subscribers): void
     exit;
 }
 
+function count_active_subscribers(array $subscribers): int
+{
+    $count = 0;
+    foreach ($subscribers as $subscriber) {
+        if (($subscriber['status'] ?? 'subscribed') === 'subscribed') {
+            $count++;
+        }
+    }
+    return $count;
+}
+
 $config = load_admin_config();
 $error = '';
 $notice = '';
@@ -132,7 +148,7 @@ if ($adminReady && is_logged_in() && ($_GET['action'] ?? '') === 'cleanup-upload
 }
 
 $subscribers = is_logged_in() ? newsletter_load_subscribers() : [];
-$activeSubscribers = array_values(array_filter($subscribers, fn ($s) => ($s['status'] ?? 'subscribed') === 'subscribed'));
+$activeSubscriberCount = count_active_subscribers($subscribers);
 $uploads = is_logged_in() ? read_upload_metadata() : [];
 ?><!doctype html>
 <html lang="en">
@@ -186,7 +202,7 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
 
         <section class="admin-card">
           <h2>Newsletter subscribers</h2>
-          <p class="admin-muted"><?= count($activeSubscribers) ?> active subscriber<?= count($activeSubscribers) === 1 ? '' : 's' ?>. <?= count($subscribers) ?> total record<?= count($subscribers) === 1 ? '' : 's' ?>.</p>
+          <p class="admin-muted"><?= $activeSubscriberCount ?> active subscriber<?= $activeSubscriberCount === 1 ? '' : 's' ?>. <?= count($subscribers) ?> total record<?= count($subscribers) === 1 ? '' : 's' ?>.</p>
           <div class="admin-actions"><a class="button button-secondary" href="/admin/?action=export-subscribers">Export CSV</a></div>
           <div class="admin-table-wrap">
             <table class="admin-table">
