@@ -78,39 +78,25 @@ function normalizePlaceholderContactLinks() {
   });
 }
 
-function getTodayDateKey() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+function applyQuoteToPage(quote) {
+  const quoteText = document.querySelector('[data-daily-quote-text]');
+  const quoteSource = document.querySelector('[data-daily-quote-source]');
+  const quoteLabel = document.querySelector('[data-daily-quote-label]');
 
-function getRandomQuote(quotes, previousQuoteId) {
-  const availableQuotes = quotes.length > 1
-    ? quotes.filter((quote) => quote.id !== previousQuoteId)
-    : quotes;
-
-  return availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
-}
-
-function readStoredDailyQuote() {
-  try {
-    return JSON.parse(localStorage.getItem('siteDailyQuote') || '{}');
-  } catch (error) {
-    return {};
-  }
-}
-
-function saveStoredDailyQuote(selection) {
-  try {
-    localStorage.setItem('siteDailyQuote', JSON.stringify(selection));
-  } catch (error) {
+  if (!quoteText || !quoteSource || !quote) {
     return;
   }
+
+  const language = getPageLanguage();
+  quoteText.textContent = `„${quote[language] || quote.ro || quote.en}”`;
+  quoteSource.textContent = quote.source ? `— ${quote.author}, ${quote.source}` : `— ${quote.author}`;
+
+  if (quoteLabel) {
+    quoteLabel.textContent = language === 'en' ? 'My quote today:' : 'Citatul meu de azi:';
+  }
 }
 
-function getSelectedQuote() {
+function getFallbackQuote() {
   const quotes = window.SITE_QUOTES || [];
 
   if (!quotes.length) {
@@ -125,50 +111,37 @@ function getSelectedQuote() {
     }
   }
 
-  const today = getTodayDateKey();
-  const storedSelection = readStoredDailyQuote();
-  const storedQuote = quotes.find((quote) => quote.id === storedSelection.quoteId);
-
-  if (storedSelection.date === today && storedQuote) {
-    return storedQuote;
-  }
-
-  const newQuote = getRandomQuote(quotes, storedSelection.quoteId);
-
-  if (!newQuote) {
-    return null;
-  }
-
-  saveStoredDailyQuote({
-    date: today,
-    quoteId: newQuote.id
-  });
-
-  return newQuote;
+  return quotes[0];
 }
 
-function renderDailyQuote() {
+async function renderDailyQuote() {
   const quoteBox = document.querySelector('[data-daily-quote]');
-  const quoteText = document.querySelector('[data-daily-quote-text]');
-  const quoteSource = document.querySelector('[data-daily-quote-source]');
-  const quoteLabel = document.querySelector('[data-daily-quote-label]');
 
-  if (!quoteBox || !quoteText || !quoteSource) {
+  if (!quoteBox) {
     return;
   }
 
-  const quote = getSelectedQuote();
+  try {
+    const response = await fetch('/daily-quote.php', {
+      headers: {
+        Accept: 'application/json'
+      },
+      cache: 'no-store'
+    });
 
-  if (!quote) {
-    return;
-  }
+    if (!response.ok) {
+      throw new Error('Daily quote unavailable');
+    }
 
-  const language = getPageLanguage();
-  quoteText.textContent = `„${quote[language] || quote.ro || quote.en}”`;
-  quoteSource.textContent = quote.source ? `— ${quote.author}, ${quote.source}` : `— ${quote.author}`;
+    const data = await response.json();
 
-  if (quoteLabel) {
-    quoteLabel.textContent = language === 'en' ? 'My quote today:' : 'Citatul meu de azi:';
+    if (!data.quote) {
+      throw new Error('Daily quote missing');
+    }
+
+    applyQuoteToPage(data.quote);
+  } catch (error) {
+    applyQuoteToPage(getFallbackQuote());
   }
 }
 
