@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once dirname(__DIR__) . '/private/newsletter.php';
 
 function private_dir(string $subdir = ''): string
 {
@@ -29,25 +30,6 @@ function is_logged_in(): bool
     return !empty($_SESSION['admin_logged_in']);
 }
 
-function read_jsonl(string $path): array
-{
-    if (!is_file($path)) {
-        return [];
-    }
-
-    $rows = [];
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-
-    foreach ($lines as $line) {
-        $item = json_decode($line, true);
-        if (is_array($item)) {
-            $rows[] = $item;
-        }
-    }
-
-    return array_reverse($rows);
-}
-
 function read_upload_metadata(): array
 {
     $dir = private_dir('metadata');
@@ -68,8 +50,56 @@ function read_upload_metadata(): array
     return $rows;
 }
 
+function cleanup_expired_uploads(): int
+{
+    $count = 0;
+    $metadataDir = private_dir('metadata');
+    $uploadsDir = private_dir('uploads');
+
+    foreach (glob($metadataDir . DIRECTORY_SEPARATOR . '*.json') ?: [] as $metadataFile) {
+        $item = json_decode(file_get_contents($metadataFile), true);
+        if (!is_array($item) || empty($item['expires_at']) || time() <= (int) $item['expires_at']) {
+            continue;
+        }
+
+        if (!empty($item['stored_name'])) {
+            $uploadFile = $uploadsDir . DIRECTORY_SEPARATOR . basename($item['stored_name']);
+            if (is_file($uploadFile)) {
+                unlink($uploadFile);
+            }
+        }
+
+        unlink($metadataFile);
+        $count++;
+    }
+
+    return $count;
+}
+
+function export_subscribers_csv(array $subscribers): void
+{
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="newsletter-subscribers.csv"');
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['email', 'name', 'language', 'source', 'status', 'subscribed_at', 'unsubscribed_at']);
+
+    foreach ($subscribers as $subscriber) {
+        fputcsv($out, [
+            $subscriber['email'] ?? '',
+            $subscriber['name'] ?? '',
+            $subscriber['lang'] ?? '',
+            $subscriber['source'] ?? '',
+            $subscriber['status'] ?? 'subscribed',
+            $subscriber['subscribed_at'] ?? '',
+            $subscriber['unsubscribed_at'] ?? '',
+        ]);
+    }
+    exit;
+}
+
 $config = load_admin_config();
 $error = '';
+$notice = '';
 
 if (isset($_GET['logout'])) {
     $_SESSION = [];
@@ -92,7 +122,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $adminReady = !empty($config['username']) && !empty($config['password_hash']) && $config['password_hash'] !== 'REPLACE_WITH_PASSWORD_HASH';
-$subscribers = is_logged_in() ? read_jsonl(private_dir('newsletter-subscribers.jsonl')) : [];
+
+if ($adminReady && is_logged_in() && ($_GET['action'] ?? '') === 'export-subscribers') {
+    export_subscribers_csv(newsletter_load_subscribers());
+}
+
+if ($adminReady && is_logged_in() && ($_GET['action'] ?? '') === 'cleanup-uploads') {
+    $notice = cleanup_expired_uploads() . ' expired upload record(s) cleaned.';
+}
+
+$subscribers = is_logged_in() ? newsletter_load_subscribers() : [];
+$activeSubscribers = array_values(array_filter($subscribers, fn ($s) => ($s['status'] ?? 'subscribed') === 'subscribed'));
 $uploads = is_logged_in() ? read_upload_metadata() : [];
 ?><!doctype html>
 <html lang="en">
@@ -112,7 +152,8 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
       .admin-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
       .admin-table th, .admin-table td { border-top: 1px solid var(--color-line); padding: 0.75rem 0.45rem; text-align: left; vertical-align: top; }
       .admin-muted { color: var(--color-muted); }
-      .admin-top { display: flex; justify-content: space-between; gap: var(--space-md); align-items: center; }
+      .admin-top, .admin-actions { display: flex; justify-content: space-between; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
+      .admin-actions { justify-content: flex-start; margin: var(--space-sm) 0; }
     </style>
   </head>
   <body>
@@ -141,20 +182,24 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
           </form>
         </section>
       <?php else: ?>
+        <?php if ($notice): ?><section class="admin-card"><p class="admin-muted"><?= h($notice) ?></p></section><?php endif; ?>
+
         <section class="admin-card">
           <h2>Newsletter subscribers</h2>
-          <p class="admin-muted"><?= count($subscribers) ?> saved opt-in<?= count($subscribers) === 1 ? '' : 's' ?>.</p>
+          <p class="admin-muted"><?= count($activeSubscribers) ?> active subscriber<?= count($activeSubscribers) === 1 ? '' : 's' ?>. <?= count($subscribers) ?> total record<?= count($subscribers) === 1 ? '' : 's' ?>.</p>
+          <div class="admin-actions"><a class="button button-secondary" href="/admin/?action=export-subscribers">Export CSV</a></div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>Email</th><th>Name</th><th>Language</th><th>Source</th><th>Subscribed</th></tr></thead>
+              <thead><tr><th>Email</th><th>Name</th><th>Language</th><th>Source</th><th>Status</th><th>Subscribed</th></tr></thead>
               <tbody>
-                <?php if (!$subscribers): ?><tr><td colspan="5" class="admin-muted">No subscribers yet.</td></tr><?php endif; ?>
+                <?php if (!$subscribers): ?><tr><td colspan="6" class="admin-muted">No subscribers yet.</td></tr><?php endif; ?>
                 <?php foreach ($subscribers as $subscriber): ?>
                   <tr>
                     <td><?= h($subscriber['email'] ?? '') ?></td>
                     <td><?= h($subscriber['name'] ?? '') ?></td>
                     <td><?= h($subscriber['lang'] ?? '') ?></td>
                     <td><?= h($subscriber['source'] ?? '') ?></td>
+                    <td><?= h($subscriber['status'] ?? 'subscribed') ?></td>
                     <td><?= h($subscriber['subscribed_at'] ?? '') ?></td>
                   </tr>
                 <?php endforeach; ?>
@@ -166,6 +211,7 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
         <section class="admin-card">
           <h2>Uploaded files</h2>
           <p class="admin-muted"><?= count($uploads) ?> private upload<?= count($uploads) === 1 ? '' : 's' ?> currently tracked.</p>
+          <div class="admin-actions"><a class="button button-secondary" href="/admin/?action=cleanup-uploads">Clean expired uploads</a></div>
           <div class="admin-table-wrap">
             <table class="admin-table">
               <thead><tr><th>File</th><th>Size</th><th>Uploaded</th><th>Expires</th><th>Link</th></tr></thead>
@@ -187,7 +233,7 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
 
         <section class="admin-card">
           <h2>Future editors</h2>
-          <p class="admin-muted">Quote manager and portfolio editor are intentionally not active yet. They should be added only after the admin login and file upload flow are tested on cPanel.</p>
+          <p class="admin-muted">Quote manager and portfolio editor are intentionally not active yet. The launch-safe workflow is to edit text and images in files, while this admin area handles subscribers and upload oversight.</p>
         </section>
       <?php endif; ?>
     </main>
