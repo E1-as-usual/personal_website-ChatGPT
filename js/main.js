@@ -139,6 +139,7 @@ function renderStructuredFooter() {
   const language = getPageLanguage();
   const prefix = getLanguagePagePrefix();
   const year = new Date().getFullYear();
+  const newsletterStatus = new URLSearchParams(window.location.search).get('newsletter');
 
   const copy = language === 'en'
     ? {
@@ -146,6 +147,12 @@ function renderStructuredFooter() {
         pages: 'Pages',
         services: 'Services',
         contact: 'Contact',
+        newsletter: 'Occasional updates',
+        newsletterHelp: 'Project notes, 3D printing availability, and portfolio updates. No spam.',
+        newsletterPlaceholder: 'email@example.com',
+        newsletterButton: 'Subscribe',
+        newsletterOk: 'Newsletter subscription saved.',
+        newsletterError: 'Newsletter signup could not be saved.',
         home: 'Home',
         portfolio: 'Portfolio',
         cv: 'CV',
@@ -160,6 +167,12 @@ function renderStructuredFooter() {
         pages: 'Pagini',
         services: 'Servicii',
         contact: 'Contact',
+        newsletter: 'Actualizări ocazionale',
+        newsletterHelp: 'Note despre proiecte, disponibilitate pentru printare 3D și noutăți de portofoliu. Fără spam.',
+        newsletterPlaceholder: 'email@example.com',
+        newsletterButton: 'Abonează-te',
+        newsletterOk: 'Abonarea a fost salvată.',
+        newsletterError: 'Abonarea nu a putut fi salvată.',
         home: 'Acasă',
         portfolio: 'Portofoliu',
         cv: 'CV',
@@ -169,6 +182,10 @@ function renderStructuredFooter() {
         building: 'Construcții',
         location: 'București, România'
       };
+
+  const statusMarkup = newsletterStatus
+    ? `<p class="footer-newsletter-status">${newsletterStatus === 'ok' ? copy.newsletterOk : copy.newsletterError}</p>`
+    : '';
 
   footer.innerHTML = `
     <div class="footer-inner">
@@ -200,6 +217,19 @@ function renderStructuredFooter() {
           <a href="mailto:contact@chiurciu.com">contact@chiurciu.com</a>
           <span>${copy.location}</span>
         </nav>
+      </div>
+      <div class="footer-column footer-newsletter">
+        <h2>${copy.newsletter}</h2>
+        <p>${copy.newsletterHelp}</p>
+        ${statusMarkup}
+        <form action="/subscribe-newsletter.php" method="post">
+          <input type="hidden" name="lang" value="${language}" />
+          <input type="hidden" name="return_to" value="${window.location.pathname}" />
+          <label class="sr-only">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          <label class="sr-only" for="footer-newsletter-email">Email</label>
+          <input id="footer-newsletter-email" type="email" name="email" autocomplete="email" placeholder="${copy.newsletterPlaceholder}" required />
+          <button class="button button-secondary" type="submit">${copy.newsletterButton}</button>
+        </form>
       </div>
     </div>
     <div class="footer-bottom">
