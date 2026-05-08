@@ -7,10 +7,12 @@
   - Accepts optional files only in strict allowed formats.
   - Small uploads are attached to the email.
   - Larger uploads are stored privately and sent as secure download links.
-  - Stores explicit newsletter opt-ins in private/newsletter-subscribers.jsonl.
+  - Stores explicit newsletter opt-ins using private/newsletter.php.
   - Uses PHPMailer + authenticated SMTP when configured.
   - Falls back to PHP mail() only when SMTP is not configured and there are no direct attachments.
 */
+
+require_once __DIR__ . '/private/newsletter.php';
 
 const CONTACT_TO = 'contact@chiurciu.com';
 const CONTACT_FROM = 'website@chiurciu.com';
@@ -195,22 +197,6 @@ function store_uploads_with_links(array $files): array
     return $links;
 }
 
-function save_newsletter_subscription(string $email, string $name, string $lang): void
-{
-    ensure_private_dirs();
-    $path = private_dir('newsletter-subscribers.jsonl');
-    $entry = [
-        'email' => strtolower($email),
-        'name' => $name,
-        'lang' => $lang,
-        'source' => 'contact-form',
-        'subscribed_at' => date('c'),
-        'ip_hash' => hash('sha256', $_SERVER['REMOTE_ADDR'] ?? ''),
-    ];
-
-    file_put_contents($path, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND | LOCK_EX);
-}
-
 function site_base_url(): string
 {
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['SERVER_PORT'] ?? '') === '443');
@@ -346,7 +332,7 @@ try {
     }
 
     if ($wantsNewsletter) {
-        save_newsletter_subscription($email, $name, $lang);
+        newsletter_subscribe($email, $name, $lang, 'contact-form');
     }
 } catch (Throwable $exception) {
     error_log('Storage error: ' . $exception->getMessage());
