@@ -55,9 +55,17 @@ if (($stored['date'] ?? '') === $today && !empty($stored['quote_id'])) {
 }
 
 $previousQuoteId = $stored['quote_id'] ?? '';
-$availableQuotes = count($quotes) > 1
-    ? array_values(array_filter($quotes, fn ($quote) => ($quote['id'] ?? '') !== $previousQuoteId))
-    : $quotes;
+$availableQuotes = [];
+
+if (count($quotes) > 1) {
+    foreach ($quotes as $quote) {
+        if (($quote['id'] ?? '') !== $previousQuoteId) {
+            $availableQuotes[] = $quote;
+        }
+    }
+} else {
+    $availableQuotes = $quotes;
+}
 
 $selected = $availableQuotes[random_int(0, count($availableQuotes) - 1)];
 $newStored = [
