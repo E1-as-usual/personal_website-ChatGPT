@@ -12,6 +12,10 @@ function getPageLanguage() {
   return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'ro';
 }
 
+function getLanguageRoot() {
+  return `/${getPageLanguage()}/`;
+}
+
 function getLanguagePagePrefix() {
   const path = window.location.pathname;
   const language = getPageLanguage();
@@ -27,17 +31,21 @@ function getLanguagePagePrefix() {
   return `${language}/`;
 }
 
+function buildLanguageUrl(pathFromLanguageRoot = '') {
+  return `${getLanguageRoot()}${pathFromLanguageRoot}`;
+}
+
 function normalizeSiteNavigation() {
   const menu = document.querySelector('#nav-menu');
   if (!menu) return;
 
-  const prefix = getLanguagePagePrefix();
+  const language = getPageLanguage();
   const links = Array.from(menu.querySelectorAll('a'));
 
   if (!links.some((link) => (link.getAttribute('href') || '').includes('portfolio.html')) && links[0]) {
     const portfolioLink = document.createElement('a');
-    portfolioLink.href = `${prefix}portfolio.html`;
-    portfolioLink.textContent = getPageLanguage() === 'en' ? 'Portfolio' : 'Portofoliu';
+    portfolioLink.href = buildLanguageUrl('portfolio.html');
+    portfolioLink.textContent = language === 'en' ? 'Portfolio' : 'Portofoliu';
     links[0].insertAdjacentElement('afterend', portfolioLink);
   }
 
@@ -50,15 +58,23 @@ function normalizeSiteNavigation() {
       return;
     }
 
+    if (text === 'home' || text === 'acasă') link.href = buildLanguageUrl('');
+    if (text === 'portfolio' || text === 'portofoliu') link.href = buildLanguageUrl('portfolio.html');
+    if (text === '3d modelling' || text === 'modelare 3d') link.href = buildLanguageUrl('areas/3d-modelling.html');
+    if (text === '3d printing' || text === 'printare 3d') link.href = buildLanguageUrl('areas/3d-printing.html');
+    if (text === 'photography' || text === 'fotografie') link.href = buildLanguageUrl('areas/photography.html');
+    if (text === 'small-scale building' || text === 'construcții') link.href = buildLanguageUrl('areas/small-scale-building.html');
+    if (text === 'cv') link.href = buildLanguageUrl('areas/cv.html');
+
     if (href === '#contact' || href.endsWith('/#contact') || text === 'contact') {
-      link.href = `${prefix}contact.html`;
+      link.href = buildLanguageUrl('contact.html');
       link.textContent = 'Contact';
     }
   });
 }
 
 function normalizePlaceholderContactLinks() {
-  const contactHref = `${getLanguagePagePrefix()}contact.html`;
+  const contactHref = buildLanguageUrl('contact.html');
 
   document.querySelectorAll('a[href^="mailto:hello@example.com"], a[href="#contact"]').forEach((link) => {
     if (link.id === 'calculator-mailto') return;
@@ -133,7 +149,6 @@ function renderStructuredFooter() {
   if (!footer) return;
 
   const language = getPageLanguage();
-  const prefix = getLanguagePagePrefix();
   const year = new Date().getFullYear();
   const newsletterStatus = new URLSearchParams(window.location.search).get('newsletter');
 
@@ -158,8 +173,8 @@ function renderStructuredFooter() {
   footer.innerHTML = `
     <div class="footer-inner">
       <div class="footer-brand"><h2>Ioan Chiurciu</h2><p>${copy.description}</p></div>
-      <div class="footer-column"><h2>${copy.pages}</h2><nav class="footer-links" aria-label="${copy.pages}"><a href="${prefix}">${copy.home}</a><a href="${prefix}portfolio.html">${copy.portfolio}</a><a href="${prefix}areas/cv.html">${copy.cv}</a><a href="${prefix}privacy.html">${copy.privacy}</a><a href="${prefix}contact.html">${copy.contact}</a></nav></div>
-      <div class="footer-column"><h2>${copy.services}</h2><nav class="footer-links" aria-label="${copy.services}"><a href="${prefix}areas/3d-modelling.html">${copy.modelling}</a><a href="${prefix}areas/3d-printing.html">${copy.printing}</a><a href="${prefix}areas/photography.html">${copy.photography}</a><a href="${prefix}areas/small-scale-building.html">${copy.building}</a></nav></div>
+      <div class="footer-column"><h2>${copy.pages}</h2><nav class="footer-links" aria-label="${copy.pages}"><a href="${buildLanguageUrl('')}">${copy.home}</a><a href="${buildLanguageUrl('portfolio.html')}">${copy.portfolio}</a><a href="${buildLanguageUrl('areas/cv.html')}">${copy.cv}</a><a href="${buildLanguageUrl('privacy.html')}">${copy.privacy}</a><a href="${buildLanguageUrl('contact.html')}">${copy.contact}</a></nav></div>
+      <div class="footer-column"><h2>${copy.services}</h2><nav class="footer-links" aria-label="${copy.services}"><a href="${buildLanguageUrl('areas/3d-modelling.html')}">${copy.modelling}</a><a href="${buildLanguageUrl('areas/3d-printing.html')}">${copy.printing}</a><a href="${buildLanguageUrl('areas/photography.html')}">${copy.photography}</a><a href="${buildLanguageUrl('areas/small-scale-building.html')}">${copy.building}</a></nav></div>
       <div class="footer-column"><h2>${copy.contact}</h2><nav class="footer-links" aria-label="${copy.contact}"><a href="mailto:contact@chiurciu.com">contact@chiurciu.com</a><span>${copy.location}</span></nav></div>
       <div class="footer-column footer-newsletter"><h2>${copy.newsletter}</h2><p>${copy.newsletterHelp}</p>${statusMarkup}<form action="/subscribe-newsletter.php" method="post"><input type="hidden" name="lang" value="${language}" /><input type="hidden" name="return_to" value="${window.location.pathname}" /><label class="sr-only">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label><label class="sr-only" for="footer-newsletter-email">Email</label><input id="footer-newsletter-email" type="email" name="email" autocomplete="email" placeholder="email@example.com" required /><button class="button button-secondary" type="submit">${copy.newsletterButton}</button></form></div>
     </div>
