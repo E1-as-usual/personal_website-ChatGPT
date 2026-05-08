@@ -5,6 +5,7 @@ private/admin-config.php
 # Uploaded contact-form files and generated metadata
 private/uploads/*
 private/metadata/*
+private/newsletter-subscribers.json
 private/newsletter-subscribers.jsonl
 !private/uploads/.gitkeep
 !private/metadata/.gitkeep
