@@ -153,6 +153,7 @@ function renderStructuredFooter() {
         newsletterButton: 'Subscribe',
         newsletterOk: 'Newsletter subscription saved.',
         newsletterError: 'Newsletter signup could not be saved.',
+        privacy: 'Privacy',
         home: 'Home',
         portfolio: 'Portfolio',
         cv: 'CV',
@@ -173,6 +174,7 @@ function renderStructuredFooter() {
         newsletterButton: 'Abonează-te',
         newsletterOk: 'Abonarea a fost salvată.',
         newsletterError: 'Abonarea nu a putut fi salvată.',
+        privacy: 'Confidențialitate',
         home: 'Acasă',
         portfolio: 'Portofoliu',
         cv: 'CV',
@@ -199,6 +201,7 @@ function renderStructuredFooter() {
           <a href="${prefix}">${copy.home}</a>
           <a href="${prefix}portfolio.html">${copy.portfolio}</a>
           <a href="${prefix}areas/cv.html">${copy.cv}</a>
+          <a href="${prefix}privacy.html">${copy.privacy}</a>
           <a href="${prefix}contact.html">${copy.contact}</a>
         </nav>
       </div>
