@@ -5,11 +5,10 @@
   Launch behavior:
   - Validates text fields and honeypot spam field.
   - Accepts optional files only in strict allowed formats.
-  - Small uploads are attached to the email.
-  - Larger uploads are stored privately and sent as secure download links.
+  - Stores all uploads privately and sends secure download links by email.
   - Stores explicit newsletter opt-ins using private/newsletter.php.
   - Uses PHPMailer + authenticated SMTP when configured.
-  - Falls back to PHP mail() only when SMTP is not configured and there are no direct attachments.
+  - Falls back to PHP mail() only when SMTP is not configured.
 */
 
 require_once __DIR__ . '/private/newsletter.php';
@@ -17,8 +16,7 @@ require_once __DIR__ . '/private/newsletter.php';
 const CONTACT_TO = 'contact@chiurciu.com';
 const CONTACT_FROM = 'website@chiurciu.com';
 const MAX_FIELD_LENGTH = 4000;
-const ATTACHMENT_LIMIT_BYTES = 15728640;
-const STORED_LINK_LIMIT_BYTES = 52428800;
+const STORED_LINK_LIMIT_BYTES = 209715200;
 const DOWNLOAD_TOKEN_BYTES = 24;
 const DOWNLOAD_EXPIRY_DAYS = 14;
 
@@ -117,6 +115,7 @@ function validate_uploads(array $uploads): array
 
     foreach ($uploads as $upload) {
         if ($upload['error'] !== UPLOAD_ERR_OK) {
+            error_log('Upload PHP error code: ' . $upload['error']);
             throw new RuntimeException('upload-error');
         }
 
@@ -141,6 +140,7 @@ function validate_uploads(array $uploads): array
         }
 
         if ($mime !== '' && !in_array($mime, ALLOWED_MIME_TYPES, true)) {
+            error_log('Invalid upload MIME: ' . $mime . ' for file ' . $originalName);
             throw new RuntimeException('invalid-file');
         }
 
@@ -231,7 +231,7 @@ function load_mail_config(): array
     ];
 }
 
-function send_with_phpmailer(array $config, string $subject, string $body, string $replyEmail, string $replyName, array $attachments): bool
+function send_with_phpmailer(array $config, string $subject, string $body, string $replyEmail, string $replyName): bool
 {
     $autoload = __DIR__ . '/vendor/autoload.php';
 
@@ -255,6 +255,7 @@ function send_with_phpmailer(array $config, string $subject, string $body, strin
         $mail->Password = $config['smtp_pass'];
         $mail->Port = (int) $config['smtp_port'];
         $mail->SMTPSecure = $config['smtp_secure'] === 'ssl' ? PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Timeout = 30;
         $mail->CharSet = 'UTF-8';
 
         $mail->setFrom($config['from_email'] ?: CONTACT_FROM, $config['from_name'] ?: 'Ioan Chiurciu Website');
@@ -263,10 +264,6 @@ function send_with_phpmailer(array $config, string $subject, string $body, strin
         $mail->Subject = $subject;
         $mail->Body = $body;
         $mail->isHTML(false);
-
-        foreach ($attachments as $attachment) {
-            $mail->addAttachment($attachment['tmp_name'], $attachment['original_name']);
-        }
 
         return $mail->send();
     } catch (Throwable $exception) {
@@ -321,13 +318,10 @@ try {
     redirect_back($lang, $exception->getMessage() === 'upload-too-large' ? 'upload-too-large' : 'invalid-file');
 }
 
-$attachments = [];
 $downloadLinks = [];
 
 try {
-    if (!empty($validatedUploads) && $totalUploadSize <= ATTACHMENT_LIMIT_BYTES) {
-        $attachments = $validatedUploads;
-    } elseif (!empty($validatedUploads)) {
+    if (!empty($validatedUploads)) {
         $downloadLinks = store_uploads_with_links($validatedUploads);
     }
 
@@ -349,14 +343,6 @@ $body .= "Newsletter: " . ($wantsNewsletter ? 'da' : 'nu') . "\n";
 $body .= "Limba formularului: {$lang}\n\n";
 $body .= "Mesaj:\n{$message}\n\n";
 
-if (!empty($attachments)) {
-    $body .= "Fișiere atașate direct:\n";
-    foreach ($attachments as $file) {
-        $body .= '- ' . $file['original_name'] . ' (' . format_bytes($file['size']) . ")\n";
-    }
-    $body .= "\n";
-}
-
 if (!empty($downloadLinks)) {
     $body .= "Fișiere încărcate ca link privat, valabile " . DOWNLOAD_EXPIRY_DAYS . " zile:\n";
     foreach ($downloadLinks as $link) {
@@ -371,10 +357,10 @@ $hasSmtp = !empty($config['smtp_host']) && !empty($config['smtp_user']) && !empt
 $sent = false;
 
 if ($hasSmtp) {
-    $sent = send_with_phpmailer($config, $subject, $body, $email, $name, $attachments);
+    $sent = send_with_phpmailer($config, $subject, $body, $email, $name);
 }
 
-if (!$sent && empty($attachments)) {
+if (!$sent) {
     $sent = send_with_mail($subject, $body, $email, $name);
 }
 
