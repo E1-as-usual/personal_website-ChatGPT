@@ -1,5 +1,20 @@
 (() => {
-  const triggers = Array.from(document.querySelectorAll('[data-lightbox]'));
+  const stylesheetHref = '/css/lightbox.css';
+
+  if (!document.querySelector(`link[href="${stylesheetHref}"]`)) {
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = stylesheetHref;
+    document.head.appendChild(stylesheet);
+  }
+
+  const triggers = Array.from(document.querySelectorAll([
+    '[data-lightbox]',
+    '.print-gallery-main',
+    '.print-gallery-secondary',
+    '.print-gallery-thumb',
+    '.material-colour-image img'
+  ].join(',')));
 
   if (!triggers.length) {
     return;
