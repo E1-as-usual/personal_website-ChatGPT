@@ -17,7 +17,7 @@ require_once __DIR__ . '/private/newsletter.php';
 const CONTACT_TO = 'contact@chiurciu.com';
 const CONTACT_FROM = 'website@chiurciu.com';
 const MAX_FIELD_LENGTH = 4000;
-const STORED_LINK_LIMIT_BYTES = 209715200;
+const STORED_LINK_LIMIT_BYTES = 52428800;
 const DOWNLOAD_TOKEN_BYTES = 24;
 const DOWNLOAD_EXPIRY_DAYS = 14;
 
