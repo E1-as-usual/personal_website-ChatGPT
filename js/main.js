@@ -86,6 +86,31 @@ function normalizePlaceholderContactLinks() {
   });
 }
 
+function normalizePublicLaunchWording() {
+  const language = getPageLanguage();
+  const imageReadyText = language === 'en' ? 'Image in preparation' : 'Imagine în pregătire';
+
+  document.querySelectorAll('.image-placeholder').forEach((placeholder) => {
+    const text = placeholder.textContent.trim();
+
+    if (text === 'Temporary image' || text === 'Imagine temporară') {
+      placeholder.textContent = imageReadyText;
+    }
+  });
+
+  document.querySelectorAll('.calculator-label span, .calculator-help').forEach((element) => {
+    const text = element.textContent.trim();
+
+    if (text.includes('În această versiune statică, fișierul nu este încă trimis automat.')) {
+      element.textContent = 'Selectarea fișierului ajută la estimare. Pentru trimiterea fișierelor, folosește formularul de contact.';
+    }
+
+    if (text.includes('In this static version, the file is not sent automatically.')) {
+      element.textContent = 'Selecting the file helps the estimate. To send files, use the contact form.';
+    }
+  });
+}
+
 function showDailyQuoteBox() {
   dailyQuoteBoxes.forEach((box) => {
     box.style.opacity = '1';
@@ -184,8 +209,10 @@ function renderStructuredFooter() {
 
 normalizeSiteNavigation();
 normalizePlaceholderContactLinks();
+normalizePublicLaunchWording();
 renderDailyQuote();
 renderStructuredFooter();
+normalizePublicLaunchWording();
 
 if (navToggle && navMenu) {
   navToggle.addEventListener('click', () => {
