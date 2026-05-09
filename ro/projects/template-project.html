@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Template reutilizabil pentru pagini de proiect pe chiurciu.com." />
+    <title>Template proiect — Ioan Chiurciu</title>
+
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/project-page.css" />
+    <link rel="stylesheet" href="../../css/lightbox.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Navigație principală">
+        <a class="site-logo" href="../">Ioan Chiurciu</a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="nav-toggle-line"></span>
+          <span class="sr-only">Deschide meniul</span>
+        </button>
+
+        <div class="nav-menu" id="nav-menu">
+          <a href="../">Acasă</a>
+          <a href="../portfolio.html" aria-current="page">Portofoliu</a>
+          <a href="../contact.html">Contact</a>
+          <a class="language-pill" href="../../en/projects/template-project.html" lang="en">EN</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="project-hero section-shell">
+        <div class="reveal">
+          <p class="eyebrow">Categorie · an · material</p>
+          <h1>Titlu proiect</h1>
+          <p class="lead">Scurtă descriere introductivă. Acest text ar trebui să explice rapid proiectul, scopul său și tipul de lucrare realizată.</p>
+
+          <a class="project-back-link" href="../portfolio.html">Înapoi la portofoliu</a>
+        </div>
+
+        <div class="project-hero-media reveal" data-lightbox>
+          Imagine principală proiect
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Informații</p>
+          <h2>Context și detalii.</h2>
+        </div>
+
+        <div class="project-meta-grid reveal-stagger">
+          <article class="project-panel">
+            <h3>Materiale</h3>
+            <p>PLA, PETG, lemn, metal, hârtie, textil etc.</p>
+          </article>
+
+          <article class="project-panel">
+            <h3>Software / unelte</h3>
+            <p>Fusion 360, Blender, Rhino, cameră foto, unelte manuale etc.</p>
+          </article>
+
+          <article class="project-panel">
+            <h3>Timp / proces</h3>
+            <p>Durată proiect, număr de iterații, timp de printare sau lucru.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Galerie</p>
+          <h2>Imagini și detalii.</h2>
+        </div>
+
+        <div class="project-gallery-grid reveal-stagger">
+          <div class="project-gallery-item" data-lightbox>
+            Imagine galerie 01
+          </div>
+
+          <div class="project-gallery-item" data-lightbox>
+            Imagine galerie 02
+          </div>
+
+          <div class="project-gallery-item" data-lightbox>
+            Imagine galerie 03
+          </div>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Proces</p>
+          <h2>Pași și dezvoltare.</h2>
+        </div>
+
+        <div class="project-process-grid reveal-stagger">
+          <article class="project-process-step">
+            <div class="project-process-image" data-lightbox>
+              Imagine proces
+            </div>
+
+            <h3>Etapă 01</h3>
+            <p>Descriere despre schițe, idei inițiale, teste sau prototipuri.</p>
+          </article>
+
+          <article class="project-process-step">
+            <div class="project-process-image" data-lightbox>
+              Imagine proces
+            </div>
+
+            <h3>Etapă 02</h3>
+            <p>Descriere despre ajustări, fabricație, modelare sau finisare.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Proiecte similare</p>
+          <h2>Mai multe lucrări.</h2>
+        </div>
+
+        <div class="project-related-grid reveal-stagger">
+          <article class="project-related-card">
+            <h3>Proiect similar 01</h3>
+            <p>Scurtă descriere pentru alt proiect din aceeași categorie.</p>
+            <a href="#">Vezi proiect</a>
+          </article>
+
+          <article class="project-related-card">
+            <h3>Proiect similar 02</h3>
+            <p>Scurtă descriere pentru alt proiect relevant.</p>
+            <a href="#">Vezi proiect</a>
+          </article>
+
+          <article class="project-related-card">
+            <h3>Proiect similar 03</h3>
+            <p>Scurtă descriere pentru alt proiect relevant.</p>
+            <a href="#">Vezi proiect</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-shell contact-section">
+        <div class="contact-card reveal">
+          <p class="eyebrow">Contact</p>
+          <h2>Discută un proiect similar.</h2>
+          <p>Poți trimite referințe, schițe, modele sau idei pentru o estimare sau colaborare.</p>
+          <a class="button" href="../contact.html">Mergi la contact</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="current-year"></span> Ioan Chiurciu. București, România.</p>
+    </footer>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/lightbox.js"></script>
+  </body>
+</html>
