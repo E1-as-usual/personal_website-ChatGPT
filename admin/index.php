@@ -30,6 +30,27 @@ function is_logged_in(): bool
     return !empty($_SESSION['admin_logged_in']);
 }
 
+function safe_token(string $token): string
+{
+    return preg_replace('/[^a-f0-9]/', '', strtolower($token));
+}
+
+function metadata_path_for_token(string $token): string
+{
+    return private_dir('metadata') . DIRECTORY_SEPARATOR . safe_token($token) . '.json';
+}
+
+function read_upload_by_token(string $token): ?array
+{
+    $path = metadata_path_for_token($token);
+    if (!is_file($path)) {
+        return null;
+    }
+
+    $item = json_decode(file_get_contents($path), true);
+    return is_array($item) ? $item : null;
+}
+
 function read_upload_metadata(): array
 {
     $dir = private_dir('metadata');
@@ -53,6 +74,30 @@ function read_upload_metadata(): array
 function sort_upload_metadata_desc(array $a, array $b): int
 {
     return ($b['uploaded_at'] ?? 0) <=> ($a['uploaded_at'] ?? 0);
+}
+
+function delete_upload(string $token): bool
+{
+    $token = safe_token($token);
+    if ($token === '') {
+        return false;
+    }
+
+    $metadataFile = metadata_path_for_token($token);
+    if (!is_file($metadataFile)) {
+        return false;
+    }
+
+    $item = json_decode(file_get_contents($metadataFile), true);
+    if (is_array($item) && !empty($item['stored_name'])) {
+        $uploadFile = private_dir('uploads') . DIRECTORY_SEPARATOR . basename($item['stored_name']);
+        if (is_file($uploadFile)) {
+            unlink($uploadFile);
+        }
+    }
+
+    unlink($metadataFile);
+    return true;
 }
 
 function cleanup_expired_uploads(): int
@@ -116,6 +161,7 @@ function count_active_subscribers(array $subscribers): int
 $config = load_admin_config();
 $error = '';
 $notice = '';
+$selectedUpload = null;
 
 if (isset($_GET['logout'])) {
     $_SESSION = [];
@@ -125,6 +171,12 @@ if (isset($_GET['logout'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (is_logged_in() && ($_POST['action'] ?? '') === 'delete-upload') {
+        $deleted = delete_upload($_POST['token'] ?? '');
+        header('Location: /admin/?notice=' . rawurlencode($deleted ? 'upload-deleted' : 'upload-delete-failed'));
+        exit;
+    }
+
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -147,6 +199,16 @@ if ($adminReady && is_logged_in() && ($_GET['action'] ?? '') === 'cleanup-upload
     $notice = cleanup_expired_uploads() . ' expired upload record(s) cleaned.';
 }
 
+if (($_GET['notice'] ?? '') === 'upload-deleted') {
+    $notice = 'Upload deleted.';
+} elseif (($_GET['notice'] ?? '') === 'upload-delete-failed') {
+    $notice = 'Upload could not be deleted.';
+}
+
+if ($adminReady && is_logged_in() && !empty($_GET['view-upload'])) {
+    $selectedUpload = read_upload_by_token($_GET['view-upload']);
+}
+
 $subscribers = is_logged_in() ? newsletter_load_subscribers() : [];
 $activeSubscriberCount = count_active_subscribers($subscribers);
 $uploads = is_logged_in() ? read_upload_metadata() : [];
@@ -159,7 +221,7 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
     <title>Admin — Ioan Chiurciu</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
-      .admin-shell { width: min(100%, 1100px); margin: 0 auto; padding: var(--space-xl) var(--space-md) var(--space-2xl); }
+      .admin-shell { width: min(100%, 1200px); margin: 0 auto; padding: var(--space-xl) var(--space-md) var(--space-2xl); }
       .admin-card { border: 1px solid var(--color-line); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: 0 18px 44px var(--color-shadow); padding: var(--space-lg); margin-bottom: var(--space-md); }
       .admin-form { display: grid; gap: var(--space-md); max-width: 420px; }
       .admin-form label { display: grid; gap: var(--space-xs); color: var(--color-muted); }
@@ -170,6 +232,11 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
       .admin-muted { color: var(--color-muted); }
       .admin-top, .admin-actions { display: flex; justify-content: space-between; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
       .admin-actions { justify-content: flex-start; margin: var(--space-sm) 0; }
+      .admin-inline-form { display: inline; }
+      .admin-link-button { border: 0; background: none; color: var(--color-accent-dark); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0; }
+      .admin-message { white-space: pre-wrap; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: rgba(255, 250, 242, 0.72); padding: var(--space-md); }
+      .admin-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); }
+      @media (max-width: 760px) { .admin-detail-grid { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
@@ -199,6 +266,26 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
         </section>
       <?php else: ?>
         <?php if ($notice): ?><section class="admin-card"><p class="admin-muted"><?= h($notice) ?></p></section><?php endif; ?>
+
+        <?php if ($selectedUpload): ?>
+          <?php $contact = is_array($selectedUpload['contact'] ?? null) ? $selectedUpload['contact'] : []; ?>
+          <section class="admin-card" id="upload-message">
+            <div class="admin-top">
+              <h2>Upload message</h2>
+              <a class="button button-secondary" href="/admin/">Close</a>
+            </div>
+            <div class="admin-detail-grid">
+              <p><strong>File:</strong><br><?= h($selectedUpload['original_name'] ?? '') ?></p>
+              <p><strong>Size:</strong><br><?= isset($selectedUpload['size']) ? h(round(((int) $selectedUpload['size']) / 1024 / 1024, 1) . ' MB') : '' ?></p>
+              <p><strong>Name:</strong><br><?= h($contact['name'] ?? '') ?></p>
+              <p><strong>Email:</strong><br><?= h($contact['email'] ?? '') ?></p>
+              <p><strong>Project type:</strong><br><?= h($contact['project_type'] ?? '') ?></p>
+              <p><strong>Submitted:</strong><br><?= h($contact['submitted_at'] ?? '') ?></p>
+            </div>
+            <h3>Message</h3>
+            <div class="admin-message"><?= h($contact['message'] ?? 'No stored message for this older upload.') ?></div>
+          </section>
+        <?php endif; ?>
 
         <section class="admin-card">
           <h2>Newsletter subscribers</h2>
@@ -230,16 +317,29 @@ $uploads = is_logged_in() ? read_upload_metadata() : [];
           <div class="admin-actions"><a class="button button-secondary" href="/admin/?action=cleanup-uploads">Clean expired uploads</a></div>
           <div class="admin-table-wrap">
             <table class="admin-table">
-              <thead><tr><th>File</th><th>Size</th><th>Uploaded</th><th>Expires</th><th>Link</th></tr></thead>
+              <thead><tr><th>File</th><th>Sender</th><th>Email</th><th>Size</th><th>Uploaded</th><th>Expires</th><th>Actions</th></tr></thead>
               <tbody>
-                <?php if (!$uploads): ?><tr><td colspan="5" class="admin-muted">No uploaded files yet.</td></tr><?php endif; ?>
+                <?php if (!$uploads): ?><tr><td colspan="7" class="admin-muted">No uploaded files yet.</td></tr><?php endif; ?>
                 <?php foreach ($uploads as $upload): ?>
+                  <?php $contact = is_array($upload['contact'] ?? null) ? $upload['contact'] : []; ?>
                   <tr>
                     <td><?= h($upload['original_name'] ?? '') ?></td>
+                    <td><?= h($contact['name'] ?? '') ?></td>
+                    <td><?= h($contact['email'] ?? '') ?></td>
                     <td><?= isset($upload['size']) ? h(round(((int) $upload['size']) / 1024 / 1024, 1) . ' MB') : '' ?></td>
                     <td><?= !empty($upload['uploaded_at']) ? h(date('Y-m-d H:i', (int) $upload['uploaded_at'])) : '' ?></td>
                     <td><?= !empty($upload['expires_at']) ? h(date('Y-m-d H:i', (int) $upload['expires_at'])) : '' ?></td>
-                    <td><?php if (!empty($upload['token'])): ?><a href="/download-file.php?token=<?= h($upload['token']) ?>">Download</a><?php endif; ?></td>
+                    <td>
+                      <?php if (!empty($upload['token'])): ?>
+                        <a href="/download-file.php?token=<?= h($upload['token']) ?>">Download</a><br>
+                        <a href="/admin/?view-upload=<?= h($upload['token']) ?>#upload-message">View message</a><br>
+                        <form class="admin-inline-form" method="post" onsubmit="return confirm('Delete this uploaded file and its metadata?');">
+                          <input type="hidden" name="action" value="delete-upload">
+                          <input type="hidden" name="token" value="<?= h($upload['token']) ?>">
+                          <button class="admin-link-button" type="submit">Delete</button>
+                        </form>
+                      <?php endif; ?>
+                    </td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>
