@@ -36,7 +36,7 @@ function createImageSlot(image) {
 
   const placeholder = document.createElement('div');
   placeholder.className = 'image-placeholder';
-  placeholder.textContent = image && image.placeholder ? image.placeholder : localizePortfolioText('Imagine temporară', 'Temporary image');
+  placeholder.textContent = image && image.placeholder ? image.placeholder : localizePortfolioText('Imagine în pregătire', 'Image in preparation');
   return placeholder;
 }
 
