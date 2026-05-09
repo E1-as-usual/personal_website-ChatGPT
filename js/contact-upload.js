@@ -1,6 +1,5 @@
 (() => {
-  const ATTACHMENT_LIMIT = 15 * 1024 * 1024;
-  const UPLOAD_LINK_LIMIT = 50 * 1024 * 1024;
+  const UPLOAD_LINK_LIMIT = 200 * 1024 * 1024;
   const ALLOWED_EXTENSIONS = ['stl', '3mf', 'obj', 'jpg', 'jpeg', 'png', 'webp', 'pdf'];
 
   const formatBytes = (bytes) => {
@@ -14,28 +13,26 @@
   const copy = {
     ro: {
       none: 'Selectează fișiere pentru a vedea metoda de trimitere.',
-      attachment: 'Fișiere selectate: {size}. Se vor trimite ca atașament email.',
-      link: 'Fișiere selectate: {size}. Se vor încărca și trimite ca link privat.',
-      blocked: 'Fișiere selectate: {size}. Totalul depășește limita formularului de 50 MB. Trimite mesajul fără atașament și include un link de transfer în brief.',
+      link: 'Fișiere selectate: {size}. Se vor încărca pe server și trimite ca link privat.',
+      blocked: 'Fișiere selectate: {size}. Totalul depășește limita formularului de 200 MB.',
       invalid: 'Unele fișiere au format neacceptat. Sunt acceptate: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF.',
       ok: 'Mesajul a fost trimis. Verifică și spam/junk dacă aștepți un răspuns.',
       error: 'Mesajul nu a putut fi trimis. Încearcă din nou sau folosește emailul direct.',
       missing: 'Completează numele, emailul și mesajul.',
       invalidEmail: 'Adresa de email nu pare validă.',
-      uploadTooLarge: 'Fișierele depășesc limita formularului. Trimite mesajul fără atașament și include un link de transfer.',
+      uploadTooLarge: 'Fișierele depășesc limita formularului de 200 MB.',
       invalidFile: 'Un fișier are format neacceptat sau nu a putut fi validat.'
     },
     en: {
       none: 'Select files to see the sending method.',
-      attachment: 'Selected files: {size}. They will be sent as email attachments.',
-      link: 'Selected files: {size}. They will be uploaded and sent as a private link.',
-      blocked: 'Selected files: {size}. The total exceeds the 50 MB form limit. Send the message without attachments and include a transfer link in the brief.',
+      link: 'Selected files: {size}. They will be uploaded to the server and sent as a private link.',
+      blocked: 'Selected files: {size}. The total exceeds the 200 MB form limit.',
       invalid: 'Some files have an unsupported format. Accepted formats: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF.',
       ok: 'Your message was sent. Please also check spam/junk if you expect a reply.',
       error: 'The message could not be sent. Try again or use direct email.',
       missing: 'Please complete name, email, and message.',
       invalidEmail: 'The email address does not look valid.',
-      uploadTooLarge: 'The files exceed the form limit. Send the message without attachments and include a transfer link.',
+      uploadTooLarge: 'The files exceed the 200 MB form limit.',
       invalidFile: 'A file has an unsupported format or could not be validated.'
     }
   };
@@ -88,13 +85,6 @@
         status.textContent = text.invalid;
         status.dataset.uploadMode = 'blocked';
         submit.disabled = true;
-        return;
-      }
-
-      if (totalSize <= ATTACHMENT_LIMIT) {
-        status.textContent = text.attachment.replace('{size}', formatBytes(totalSize));
-        status.dataset.uploadMode = 'attachment';
-        submit.disabled = false;
         return;
       }
 
