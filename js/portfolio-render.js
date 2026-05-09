@@ -61,16 +61,7 @@ function createProjectCard(project) {
   const description = document.createElement('p');
   description.textContent = project.description;
 
-  const meta = document.createElement('div');
-  meta.className = 'project-meta';
-
-  (project.tags || []).forEach((tag) => {
-    const tagElement = document.createElement('span');
-    tagElement.textContent = tag;
-    meta.appendChild(tagElement);
-  });
-
-  card.append(gallery, title, description, meta);
+  card.append(gallery, title, description);
 
   if (project.detailUrl) {
     const link = document.createElement('a');
