@@ -7,6 +7,15 @@
   padding-top: calc(var(--space-xl) + 2rem);
 }
 
+.portfolio-hero-single {
+  grid-template-columns: 1fr;
+  min-height: auto;
+}
+
+.portfolio-hero-single .portfolio-hero-content {
+  max-width: 900px;
+}
+
 .portfolio-hero-content,
 .portfolio-note,
 .portfolio-category-card,
