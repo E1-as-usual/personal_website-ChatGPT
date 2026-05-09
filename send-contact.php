@@ -6,6 +6,7 @@
   - Validates text fields and honeypot spam field.
   - Accepts optional files only in strict allowed formats.
   - Stores all uploads privately and sends secure download links by email.
+  - Stores contact context with upload metadata for admin review.
   - Stores explicit newsletter opt-ins using private/newsletter.php.
   - Uses PHPMailer + authenticated SMTP when configured.
   - Falls back to PHP mail() only when SMTP is not configured.
@@ -162,7 +163,7 @@ function validate_uploads(array $uploads): array
     return [$validated, $totalSize];
 }
 
-function store_uploads_with_links(array $files): array
+function store_uploads_with_links(array $files, array $contactContext): array
 {
     ensure_private_dirs();
     $links = [];
@@ -184,9 +185,10 @@ function store_uploads_with_links(array $files): array
             'size' => $file['size'],
             'uploaded_at' => time(),
             'expires_at' => time() + DOWNLOAD_EXPIRY_DAYS * 24 * 60 * 60,
+            'contact' => $contactContext,
         ];
 
-        file_put_contents(private_dir('metadata') . DIRECTORY_SEPARATOR . $token . '.json', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        file_put_contents(private_dir('metadata') . DIRECTORY_SEPARATOR . $token . '.json', json_encode($metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         $links[] = [
             'name' => $file['original_name'],
             'size' => $file['size'],
@@ -319,10 +321,19 @@ try {
 }
 
 $downloadLinks = [];
+$contactContext = [
+    'name' => $name,
+    'email' => $email,
+    'project_type' => $projectType,
+    'message' => $message,
+    'newsletter' => $wantsNewsletter,
+    'lang' => $lang,
+    'submitted_at' => date('c'),
+];
 
 try {
     if (!empty($validatedUploads)) {
-        $downloadLinks = store_uploads_with_links($validatedUploads);
+        $downloadLinks = store_uploads_with_links($validatedUploads, $contactContext);
     }
 
     if ($wantsNewsletter) {
