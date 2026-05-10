@@ -12,8 +12,8 @@
 
   const copy = {
     ro: {
-      none: 'Selectează fișiere pentru a vedea metoda de trimitere.',
-      link: 'Fișiere selectate: {size}. Se vor încărca pe server și trimite ca link privat.',
+      none: 'Fișierele atașate se vor încărca pe server și pot fi stocate până la 30 de zile.',
+      link: 'Fișiere selectate: {size}. Se vor încărca pe server și pot fi stocate până la 30 de zile.',
       blocked: 'Fișiere selectate: {size}. Totalul depășește limita formularului de 50 MB.',
       invalid: 'Unele fișiere au format neacceptat. Sunt acceptate: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF.',
       ok: 'Mesajul a fost trimis. Verifică și spam/junk dacă aștepți un răspuns.',
@@ -24,8 +24,8 @@
       invalidFile: 'Un fișier are format neacceptat sau nu a putut fi validat.'
     },
     en: {
-      none: 'Select files to see the sending method.',
-      link: 'Selected files: {size}. They will be uploaded to the server and sent as a private link.',
+      none: 'Attached files will be uploaded to the server and may be stored for up to 30 days.',
+      link: 'Selected files: {size}. They will be uploaded to the server and may be stored for up to 30 days.',
       blocked: 'Selected files: {size}. The total exceeds the 50 MB form limit.',
       invalid: 'Some files have an unsupported format. Accepted formats: STL, 3MF, OBJ, JPG, PNG, WEBP, PDF.',
       ok: 'Your message was sent. Please also check spam/junk if you expect a reply.',
