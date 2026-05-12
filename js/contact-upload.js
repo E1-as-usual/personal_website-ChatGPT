@@ -37,7 +37,45 @@
     }
   };
 
+  function injectCalculatorEstimate(form) {
+    const params = new URLSearchParams(window.location.search);
+    const estimateType = params.get('estimate');
+
+    if (!estimateType) {
+      return;
+    }
+
+    try {
+      const stored = sessionStorage.getItem('chiurciuCalculatorEstimate');
+
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored);
+
+      if (!parsed || !parsed.text) {
+        return;
+      }
+
+      const messageField = form.querySelector('textarea[name="message"]');
+      const projectTypeField = form.querySelector('select[name="projectType"]');
+
+      if (projectTypeField && estimateType === '3d-printing') {
+        projectTypeField.value = '3d-printing';
+      }
+
+      if (messageField && !messageField.value.trim()) {
+        messageField.value = parsed.text;
+      }
+    } catch (error) {
+      console.warn('Could not restore calculator estimate.', error);
+    }
+  }
+
   document.querySelectorAll('[data-contact-form]').forEach((form) => {
+    injectCalculatorEstimate(form);
+
     const language = getLanguage();
     const text = copy[language];
     const input = form.querySelector('[data-file-input]');
