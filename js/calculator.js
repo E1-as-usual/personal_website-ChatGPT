@@ -1,27 +1,11 @@
 const CALCULATOR = {
   currency: 'RON',
   minimumOrder: 25,
-  studentDiscount: {
-    minWeight: 200,
-    rate: 0.2,
-    label: 'Reducere student: 20%'
-  },
+  studentDiscount: { minWeight: 200, rate: 0.2, label: 'Reducere student: 20%' },
   materialRates: {
-    basic: {
-      label: 'Basic',
-      pricePerGram: 0.6,
-      note: 'Fără verificare de fișier. Clientul este responsabil pentru calitatea și printabilitatea modelului. Doar o culoare.'
-    },
-    standard: {
-      label: 'Standard',
-      pricePerGram: 0.8,
-      note: 'Include verificare de fișier, ajustări minore unde este nevoie și printare multi-color.'
-    },
-    premium: {
-      label: 'Premium',
-      pricePerGram: 1.0,
-      note: 'Include optimizare completă, potrivit pentru detalii fine și prioritate la gestionarea comenzii.'
-    }
+    basic: { label: 'Basic', pricePerGram: 0.6, note: 'Fără verificare de fișier. Clientul este responsabil pentru calitatea și printabilitatea modelului. Doar o culoare.' },
+    standard: { label: 'Standard', pricePerGram: 0.8, note: 'Include verificare de fișier, ajustări minore unde este nevoie și printare multi-color.' },
+    premium: { label: 'Premium', pricePerGram: 1.0, note: 'Include optimizare completă, potrivit pentru detalii fine și prioritate la gestionarea comenzii.' }
   },
   weightDiscounts: [
     { minWeight: 250, discountPerGram: 0.15, label: 'Reducere greutate: -0.15 RON/g' },
@@ -29,33 +13,12 @@ const CALCULATOR = {
     { minWeight: 50, discountPerGram: 0.05, label: 'Reducere greutate: -0.05 RON/g' },
     { minWeight: 0, discountPerGram: 0, label: 'Fără reducere de greutate' }
   ],
-  machine: {
-    hourlyRate: 4,
-    includedHours: 5,
-    billingIncrementHours: 0.5,
-    estimatedHoursPerGram: 1 / 50
-  },
+  machine: { hourlyRate: 4, includedHours: 5, billingIncrementHours: 0.5, estimatedHoursPerGram: 1 / 50 },
   modelStatuses: {
-    complete: {
-      label: 'Model complet / print-ready',
-      price: 0,
-      note: 'Nu adaugă cost de pregătire în calculator.'
-    },
-    adjustments: {
-      label: 'Modelul poate avea nevoie de ajustări',
-      price: 10,
-      note: 'Estimare fixă minimă pentru ajustări simple: orientare, scară, mici corecții.'
-    },
-    repair: {
-      label: 'Modelul are nevoie de reparații',
-      price: 20,
-      note: 'Estimare fixă minimă pentru reparații moderate de fișier.'
-    },
-    create: {
-      label: 'Am nevoie să fie creat modelul',
-      price: 50,
-      note: 'Estimare minimă de pornire. Modelarea se confirmă separat după brief.'
-    }
+    complete: { label: 'Model complet / print-ready', price: 0, note: 'Nu adaugă cost de pregătire în calculator.' },
+    adjustments: { label: 'Modelul poate avea nevoie de ajustări', price: 10, note: 'Estimare fixă minimă pentru ajustări simple: orientare, scară, mici corecții.' },
+    repair: { label: 'Modelul are nevoie de reparații', price: 20, note: 'Estimare fixă minimă pentru reparații moderate de fișier.' },
+    create: { label: 'Am nevoie să fie creat modelul', price: 50, note: 'Estimare minimă de pornire. Modelarea se confirmă separat după brief.' }
   },
   postProcessing: {
     sanding: { label: 'Șlefuire', pricePerPart: 10 },
@@ -66,6 +29,15 @@ const CALCULATOR = {
 };
 
 const calculatorForm = document.querySelector('#printing-calculator');
+let latestCalculatorEstimate = null;
+
+function getCalculatorLanguage() {
+  return document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'ro';
+}
+
+function getContactUrl() {
+  return getCalculatorLanguage() === 'en' ? '/en/contact.html?estimate=3d-printing' : '/ro/contact.html?estimate=3d-printing';
+}
 
 function formatMoney(value) {
   return `${value.toFixed(2)} ${CALCULATOR.currency}`;
@@ -77,21 +49,17 @@ function getNumber(formData, key) {
 }
 
 function getQuantity(formData) {
-  const hasMorePieces = formData.get('hasMorePieces') === 'yes';
-
-  if (!hasMorePieces) {
-    return 1;
-  }
-
+  if (formData.get('hasMorePieces') !== 'yes') return 1;
   const quantity = Math.floor(Number(formData.get('quantity')));
   return Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
 }
 
-function getFinishingParts(formData, hasPostProcessing) {
-  if (!hasPostProcessing) {
-    return 1;
-  }
+function getCheckedValues(formData, name) {
+  return formData.getAll(name);
+}
 
+function getFinishingParts(formData, hasPostProcessing) {
+  if (!hasPostProcessing) return 1;
   const parts = Math.floor(Number(formData.get('finishingParts')));
   return Number.isFinite(parts) && parts > 0 ? parts : 1;
 }
@@ -112,16 +80,13 @@ function getWeightModeLabel(formData) {
   return knowsExactWeightAndTime(formData) ? 'greutate exactă' : 'estimare în pași de 25 g';
 }
 
+function roundUpToIncrement(value, increment) {
+  return Math.ceil(value / increment) * increment;
+}
+
 function getPrintHours(formData, weight) {
-  if (knowsExactWeightAndTime(formData)) {
-    return getNumber(formData, 'printHours');
-  }
-
-  if (weight <= 0) {
-    return 0;
-  }
-
-  return roundUpToIncrement(weight * CALCULATOR.machine.estimatedHoursPerGram, CALCULATOR.machine.billingIncrementHours);
+  if (knowsExactWeightAndTime(formData)) return getNumber(formData, 'printHours');
+  return weight > 0 ? roundUpToIncrement(weight * CALCULATOR.machine.estimatedHoursPerGram, CALCULATOR.machine.billingIncrementHours) : 0;
 }
 
 function getTimeModeLabel(formData) {
@@ -133,80 +98,79 @@ function getWeightDiscount(totalWeight) {
 }
 
 function getStudentDiscountAmount(formData, totalWeight, eligibleSubtotal) {
-  if (!hasStudentDiscount(formData) || totalWeight < CALCULATOR.studentDiscount.minWeight) {
-    return 0;
-  }
-
+  if (!hasStudentDiscount(formData) || totalWeight < CALCULATOR.studentDiscount.minWeight) return 0;
   return eligibleSubtotal * CALCULATOR.studentDiscount.rate;
 }
 
-function roundUpToIncrement(value, increment) {
-  return Math.ceil(value / increment) * increment;
-}
-
 function getBillableMachineHours(printHours) {
-  if (printHours <= CALCULATOR.machine.includedHours) {
-    return 0;
-  }
-
-  const extraHours = printHours - CALCULATOR.machine.includedHours;
-  return roundUpToIncrement(extraHours, CALCULATOR.machine.billingIncrementHours);
-}
-
-function getCheckedValues(formData, name) {
-  return formData.getAll(name);
+  if (printHours <= CALCULATOR.machine.includedHours) return 0;
+  return roundUpToIncrement(printHours - CALCULATOR.machine.includedHours, CALCULATOR.machine.billingIncrementHours);
 }
 
 function buildBreakdownRow(label, value, note = '') {
-  return `
-    <tr>
-      <th scope="row">${label}</th>
-      <td>${formatMoney(value)}</td>
-      <td>${note}</td>
-    </tr>
-  `;
+  return `<tr><th scope="row">${label}</th><td>${formatMoney(value)}</td><td>${note}</td></tr>`;
 }
 
 function toggleConditionalFields() {
-  if (!calculatorForm) {
-    return;
-  }
+  if (!calculatorForm) return;
 
   const formData = new FormData(calculatorForm);
   const hasMorePieces = formData.get('hasMorePieces') === 'yes';
   const hasPostProcessing = getCheckedValues(formData, 'postProcessing').length > 0;
   const knowsExact = knowsExactWeightAndTime(formData);
+
   const quantityField = document.querySelector('[data-conditional="quantity"]');
   const finishingPartsField = document.querySelector('[data-conditional="finishing-parts"]');
   const estimatedWeightField = document.querySelector('[data-conditional="estimated-weight"]');
   const exactWeightField = document.querySelector('[data-conditional="exact-weight"]');
   const timeField = document.querySelector('[data-conditional="time"]');
 
-  if (quantityField) {
-    quantityField.hidden = !hasMorePieces;
-  }
+  if (quantityField) quantityField.hidden = !hasMorePieces;
+  if (finishingPartsField) finishingPartsField.hidden = !hasPostProcessing;
+  if (estimatedWeightField) estimatedWeightField.hidden = knowsExact;
+  if (exactWeightField) exactWeightField.hidden = !knowsExact;
+  if (timeField) timeField.hidden = !knowsExact;
+}
 
-  if (finishingPartsField) {
-    finishingPartsField.hidden = !hasPostProcessing;
-  }
+function buildEstimateText(estimate) {
+  const selectedPostProcessing = estimate.selectedPostProcessing.length ? estimate.selectedPostProcessing.join(', ') : 'nu';
+  const uploadedFileNote = estimate.uploadedFileName || 'nu — fișierul trebuie atașat din nou în formularul de contact';
 
-  if (estimatedWeightField) {
-    estimatedWeightField.hidden = knowsExact;
-  }
+  return [
+    'Estimare calculator printare 3D',
+    '',
+    `Estimare totală: ${formatMoney(estimate.total)}`,
+    `Preț pe bucată: ${formatMoney(estimate.perUnit)}`,
+    `Cantitate: ${estimate.quantity}`,
+    `Greutate totală estimată: ${estimate.totalWeight} g (${estimate.weightModeLabel})`,
+    `Timp estimat per bucată: ${estimate.printHours} ore (${estimate.timeModeLabel})`,
+    `Nivel fișier: ${estimate.material.label}`,
+    `Stare model: ${estimate.modelStatus.label}`,
+    `Reducere greutate: ${estimate.weightDiscount.label}`,
+    `Reducere student: ${estimate.studentDiscountTotal > 0 ? 'aplicată' : hasStudentDiscount(estimate.formData) ? 'bifată, dar sub pragul de greutate' : 'nu'}`,
+    `Post-procesare: ${selectedPostProcessing}`,
+    `Fișier selectat în calculator: ${uploadedFileNote}`,
+    '',
+    'Notă: din motive de securitate, fișierul selectat în calculator nu poate fi transferat automat. Te rog atașează fișierul din nou în acest formular.'
+  ].join('\n');
+}
 
-  if (exactWeightField) {
-    exactWeightField.hidden = !knowsExact;
-  }
+function saveEstimateForContact() {
+  if (!latestCalculatorEstimate) return;
 
-  if (timeField) {
-    timeField.hidden = !knowsExact;
+  try {
+    sessionStorage.setItem('chiurciuCalculatorEstimate', JSON.stringify({
+      type: '3d-printing',
+      createdAt: Date.now(),
+      text: buildEstimateText(latestCalculatorEstimate)
+    }));
+  } catch (error) {
+    console.warn('Could not store calculator estimate for contact form.', error);
   }
 }
 
 function updateCalculator() {
-  if (!calculatorForm) {
-    return;
-  }
+  if (!calculatorForm) return;
 
   toggleConditionalFields();
 
@@ -243,15 +207,8 @@ function updateCalculator() {
 
   const postProcessingTotal = selectedPostProcessing.reduce((total, key) => {
     const option = CALCULATOR.postProcessing[key];
-
-    if (!option) {
-      return total;
-    }
-
-    if ('pricePerPart' in option) {
-      return total + option.pricePerPart * finishingParts;
-    }
-
+    if (!option) return total;
+    if ('pricePerPart' in option) return total + option.pricePerPart * finishingParts;
     return total + option.pricePerProject;
   }, 0);
 
@@ -260,23 +217,35 @@ function updateCalculator() {
   const perUnit = total / quantity;
   const minimumOrderAdjustment = total - subtotal;
 
+  latestCalculatorEstimate = {
+    formData,
+    material,
+    modelStatus,
+    weightModeLabel,
+    timeModeLabel,
+    uploadedFileName,
+    printHours,
+    selectedPostProcessing,
+    quantity,
+    totalWeight,
+    weightDiscount,
+    studentDiscountTotal,
+    total,
+    perUnit
+  };
+
   const totalElement = document.querySelector('#calculator-total');
   const unitElement = document.querySelector('#calculator-unit');
   const discountElement = document.querySelector('#calculator-discount');
   const breakdownElement = document.querySelector('#calculator-breakdown');
   const noteElement = document.querySelector('#calculator-note');
-  const mailtoElement = document.querySelector('#calculator-mailto');
+  const handoffElement = document.querySelector('#calculator-mailto');
   const qualityNoteElement = document.querySelector('#calculator-quality-note');
   const modelNoteElement = document.querySelector('#calculator-model-note');
   const uploadNoteElement = document.querySelector('#calculator-upload-note');
 
-  if (totalElement) {
-    totalElement.textContent = formatMoney(total);
-  }
-
-  if (unitElement) {
-    unitElement.textContent = formatMoney(perUnit);
-  }
+  if (totalElement) totalElement.textContent = formatMoney(total);
+  if (unitElement) unitElement.textContent = formatMoney(perUnit);
 
   if (discountElement) {
     const studentLabel = hasStudentDiscount(formData)
@@ -287,18 +256,13 @@ function updateCalculator() {
     discountElement.textContent = `${weightDiscount.label} la ${totalWeight} g total${studentLabel}`;
   }
 
-  if (qualityNoteElement) {
-    qualityNoteElement.textContent = material.note;
-  }
-
-  if (modelNoteElement) {
-    modelNoteElement.textContent = modelStatus.note;
-  }
+  if (qualityNoteElement) qualityNoteElement.textContent = material.note;
+  if (modelNoteElement) modelNoteElement.textContent = modelStatus.note;
 
   if (uploadNoteElement) {
     uploadNoteElement.textContent = uploadedFileName
-      ? `Fișier selectat: ${uploadedFileName}. Acesta ajută la estimare, dar nu este trimis automat prin butonul de email.`
-      : 'Poți selecta un fișier STL, 3MF sau OBJ pentru verificare locală. Trimiterea efectivă se va face ulterior prin email/formular.';
+      ? `Fișier selectat: ${uploadedFileName}. Acesta ajută la estimare, dar trebuie atașat din nou în formularul de contact.`
+      : 'Poți selecta un fișier STL, 3MF sau OBJ pentru estimare locală. Fișierul se trimite prin formularul de contact.';
   }
 
   if (breakdownElement) {
@@ -328,15 +292,21 @@ function updateCalculator() {
       : `Estimarea este orientativă. Greutatea se introduce din 25 în 25 g, iar timpul este estimat automat la aproximativ 1 h / 50 g. Dacă știi exact greutatea și timpul din slicer, bifează opțiunea exactă.${studentNote}`;
   }
 
-  if (mailtoElement) {
-    const subject = encodeURIComponent('Estimare printare 3D');
-    const body = encodeURIComponent(`Bună,\n\nAș dori o estimare pentru printare 3D.\n\nEstimare calculator: ${formatMoney(total)}\nPreț pe bucată: ${formatMoney(perUnit)}\nCantitate: ${quantity}\nGreutate estimată totală: ${totalWeight} g (${weightModeLabel})\nTimp estimat per bucată: ${printHours} ore (${timeModeLabel})\nNivel fișier: ${material.label}\nStare model: ${modelStatus.label}\nReducere greutate: ${weightDiscount.label}\nReducere student: ${hasStudentDiscount(formData) ? (studentDiscountTotal > 0 ? 'aplicată' : 'bifată, dar sub pragul de greutate') : 'nu'}\nPost-procesare: ${selectedPostProcessing.length ? selectedPostProcessing.join(', ') : 'nu'}\nFișier selectat în calculator: ${uploadedFileName || 'nu'}\n\nAtașez fișierul sau trimit mai multe detalii.\n`);
-    mailtoElement.href = `mailto:contact@chiurciu.com?subject=${subject}&body=${body}`;
+  if (handoffElement) {
+    handoffElement.href = getContactUrl();
+    handoffElement.textContent = getCalculatorLanguage() === 'en' ? 'Send estimate through form' : 'Trimite estimarea prin formular';
+    handoffElement.setAttribute('role', 'button');
   }
 }
 
 if (calculatorForm) {
   calculatorForm.addEventListener('input', updateCalculator);
   calculatorForm.addEventListener('change', updateCalculator);
+
+  const handoffElement = document.querySelector('#calculator-mailto');
+  if (handoffElement) {
+    handoffElement.addEventListener('click', saveEstimateForContact);
+  }
+
   updateCalculator();
 }
