@@ -134,6 +134,26 @@ function newsletter_unsubscribe(string $token): bool
     return $updated;
 }
 
+function newsletter_delete_subscriber(string $email): bool
+{
+    $email = strtolower(trim($email));
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $subscribers = newsletter_load_subscribers();
+    $index = newsletter_find_index($subscribers, $email);
+
+    if ($index < 0) {
+        return false;
+    }
+
+    array_splice($subscribers, $index, 1);
+    newsletter_save_subscribers($subscribers);
+    return true;
+}
+
 function newsletter_active_subscribers(): array
 {
     $active = [];
